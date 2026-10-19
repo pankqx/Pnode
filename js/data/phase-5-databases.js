@@ -1,1 +1,300 @@
-/* coming next */
+window.PNODE = window.PNODE || { phases: [], mind: [], capstones: [] };
+window.PNODE.phases.push({
+  id: "databases",
+  n: 5,
+  title: "Databases",
+  tagline: "MongoDB and PostgreSQL, modelling, indexes and transactions. Data is where apps get slow and where real bugs cost money.",
+  lessons: [
+    {
+      id: "data-modeling",
+      title: "Data modelling fundamentals",
+      sub: "Entities, relationships, keys and normalisation",
+      hours: 2,
+      concept: [
+        `Before choosing a database, model the data: what are the entities, how do they relate (one-to-one, one-to-many, many-to-many), and which questions will you ask most often? A good model makes features easy; a bad one makes every feature a fight.`,
+        `Normalisation removes duplication so each fact lives in one place. Denormalisation copies data on purpose to make reads faster. Seniors know both and choose based on access patterns.`,
+        `Primary keys identify rows, foreign keys link them, and unique constraints protect business rules (one account per email) at the database level, where they can't be bypassed by a buggy route.`,
+      ],
+      objectives: [
+        `Draw an ER diagram from a feature description`,
+        `Explain normalisation up to 3NF in plain words`,
+        `Put business rules into constraints`,
+      ],
+      build: {
+        title: "Model three real products",
+        brief: `Create ER diagrams (dbdiagram.io or Mermaid) for three apps you know: a food-delivery app, a college management system, and your Taskforge capstone.`,
+        steps: [
+          `For each, list the top ten queries the app runs most.`,
+          `Draw entities, relationships, keys and constraints.`,
+          `Mark one place where you'd deliberately denormalise, and why.`,
+          `For Taskforge, write both a relational (SQL) version and a document (MongoDB) version.`,
+          `Commit everything in a <code>data-models</code> repo with diagrams rendered in the README.`,
+        ],
+      },
+      checks: [
+        `Every many-to-many relation has a clear join table or embedding decision`,
+        `Unique and not-null rules are written as constraints, not comments`,
+        `Each denormalisation has a written reason and an update strategy`,
+        `Taskforge has both SQL and Mongo versions with a short comparison`,
+      ],
+      hints: [
+        `Start from nouns in the feature description (entities) and verbs (relationships).`,
+        `GitHub renders Mermaid <code>erDiagram</code> blocks inside Markdown automatically.`,
+        `Ask "if this value changes, how many places must I update?" to find accidental duplication.`,
+      ],
+      res: [
+        { t: "dbdiagram.io", u: "https://dbdiagram.io/", k: "tool" },
+        { t: "Mermaid: Entity relationship diagrams", u: "https://mermaid.js.org/syntax/entityRelationshipDiagram.html", k: "doc" },
+        { t: "Database normalization explained", yt: "database normalization 1nf 2nf 3nf explained" },
+        { t: "CMU Intro to Database Systems (free lectures)", yt: "cmu intro to database systems andy pavlo" },
+      ],
+      iq: [
+        { q: "What is normalisation and when would you denormalise?", a: `Organising data so each fact is stored once, reducing update anomalies. Denormalise when read performance matters more than write simplicity, like storing a cached comment count, as long as you have a plan to keep the copy in sync.` },
+        { q: "How do you model a many-to-many relationship?", a: `In SQL, a join table with foreign keys to both sides (and any relationship data, like role or joinedAt). In MongoDB, arrays of references on one or both sides, or a separate collection when the relationship has its own data or is large.` },
+      ],
+    },
+    {
+      id: "mongodb",
+      title: "MongoDB and Mongoose",
+      sub: "Documents, embedding vs referencing, schema validation",
+      hours: 3,
+      concept: [
+        `MongoDB stores JSON-like documents in collections. Its rule of thumb: data that is read together should be stored together. Embed child data that belongs to one parent and stays small (addresses, line items); reference data that is shared, large or grows without limit (comments, users).`,
+        `Mongoose adds schemas, validation, middleware and type-safe models on top of the driver. Even in a "schemaless" database, your application needs a schema.`,
+        `Learn the operators that matter: <code>$set</code>, <code>$push</code>, <code>$inc</code>, <code>$in</code>, <code>$elemMatch</code>, and <code>populate</code> for references, plus <code>lean()</code> when you only need plain data.`,
+      ],
+      objectives: [
+        `Choose embed vs reference with reasons`,
+        `Define typed Mongoose schemas with validation`,
+        `Use atomic update operators instead of read-modify-write`,
+      ],
+      build: {
+        title: "Move the Notes API to MongoDB",
+        brief: `Replace your in-memory repository with MongoDB through Mongoose. If you built the repository interface earlier, controllers shouldn't change.`,
+        steps: [
+          `Run MongoDB locally with Docker or use a free MongoDB Atlas cluster.`,
+          `Schemas for users, notebooks (with embedded members and roles) and notes (referencing notebook).`,
+          `Use atomic operators for tags and counters.`,
+          `Add a soft delete with <code>deletedAt</code> and exclude deleted items by default.`,
+          `Run your Phase 4 integration tests against a test database and make them pass.`,
+        ],
+      },
+      checks: [
+        `All Phase 4 integration tests pass against MongoDB`,
+        `No read-then-write updates where an atomic operator works`,
+        `Embed vs reference decisions documented with reasons`,
+        `Connection string comes from validated env vars, never committed`,
+      ],
+      hints: [
+        `<code>docker run -d -p 27017:27017 mongo:7</code> starts a local server.`,
+        `For tests, <code>mongodb-memory-server</code> spins up a throwaway instance automatically.`,
+        `Mongoose's <code>InferSchemaType</code> gives you TypeScript types from the schema.`,
+      ],
+      res: [
+        { t: "MongoDB: Data modeling", u: "https://www.mongodb.com/docs/manual/data-modeling/", k: "doc" },
+        { t: "Mongoose docs", u: "https://mongoosejs.com/docs/guide.html", k: "doc" },
+        { t: "MongoDB University (free courses)", u: "https://learn.mongodb.com/", k: "course" },
+        { t: "MongoDB schema design best practices", yt: "mongodb schema design embedding vs referencing" },
+      ],
+      iq: [
+        { q: "Embedding vs referencing in MongoDB?", a: `Embed when the child is owned by the parent, read together, and bounded in size (documents max out at 16MB). Reference when the data is shared, independently queried, or grows without bound. Often you embed a small summary and reference the full record.` },
+        { q: "When would you choose MongoDB over PostgreSQL?", a: `Flexible or evolving document-shaped data, nested reads that map to one document, and horizontal scaling needs. Choose Postgres for strong relational integrity, complex joins and reporting, and multi-row transactions as the normal case. Both are capable; access patterns decide.` },
+      ],
+    },
+    {
+      id: "indexes",
+      title: "Indexes and query performance",
+      sub: "explain(), compound indexes and the ESR rule",
+      hours: 2,
+      concept: [
+        `Without an index, a database scans every document to answer a query. An index is a sorted structure (usually a B-tree) that lets it jump straight to matches. Indexes speed up reads but slow writes and use memory, so add them for real query patterns.`,
+        `Compound index order matters. In MongoDB the ESR rule is a good start: fields matched by Equality first, then fields used for Sort, then Range filters. The same thinking applies to Postgres.`,
+        `<code>explain()</code> (Mongo) and <code>EXPLAIN ANALYZE</code> (Postgres) show what the database actually did. Learn to read "documents examined vs returned" and scan types.`,
+      ],
+      objectives: [
+        `Read an explain plan`,
+        `Design compound indexes for real queries`,
+        `Measure the impact before and after`,
+      ],
+      build: {
+        title: "Index investigation",
+        brief: `Seed your Notes database with 1 million notes across 10,000 users, then make the slow queries fast and prove it.`,
+        steps: [
+          `Write a seed script that inserts in batches.`,
+          `Time and explain your three most common queries with no indexes.`,
+          `Add compound indexes following ESR and re-measure.`,
+          `Add a text index for search and compare with a regex search.`,
+          `Write a report with timings, documents examined and the index each query used.`,
+        ],
+      },
+      checks: [
+        `Each main query examines roughly as many documents as it returns`,
+        `No collection scans in the explain output for main queries`,
+        `Report shows before and after numbers`,
+        `You removed at least one index that wasn't used`,
+      ],
+      hints: [
+        `<code>insertMany</code> in batches of 5,000 is far faster than single inserts.`,
+        `In explain output, compare <code>totalDocsExamined</code> with <code>nReturned</code>, and look for <code>COLLSCAN</code> vs <code>IXSCAN</code>.`,
+        `<code>db.collection.aggregate([{ $indexStats: {} }])</code> shows how often each index is used.`,
+      ],
+      res: [
+        { t: "MongoDB: Indexes", u: "https://www.mongodb.com/docs/manual/indexes/", k: "doc" },
+        { t: "MongoDB: The ESR rule", u: "https://www.mongodb.com/docs/manual/tutorial/equality-sort-range-guideline/", k: "doc" },
+        { t: "Use The Index, Luke (SQL indexing, free)", u: "https://use-the-index-luke.com/", k: "course" },
+        { t: "Database indexing explained", yt: "database indexing explained b tree" },
+      ],
+      iq: [
+        { q: "How does a database index work?", a: `It keeps a sorted copy of selected fields, usually a B-tree, with pointers to the full rows. The database can binary-search the tree instead of scanning everything. The cost is extra storage and slower writes, since every insert or update must update the index.` },
+        { q: "A query is slow in production. How do you investigate?", a: `Find the exact query and its parameters from logs or slow-query logs, run explain with real data, check scan type and examined vs returned, look at indexes and the ESR order, check for N+1 patterns in the app, then fix and verify with numbers.` },
+      ],
+    },
+    {
+      id: "aggregation",
+      title: "Aggregation and analytics queries",
+      sub: "Pipelines, grouping, lookups and reporting",
+      hours: 2,
+      concept: [
+        `Dashboards need summaries: revenue per day, top products, active users. Doing this in application code by loading everything is slow and memory-hungry. MongoDB's aggregation pipeline (and SQL's GROUP BY) let the database do it near the data.`,
+        `A pipeline is a series of stages: <code>$match</code> filters, <code>$group</code> aggregates, <code>$sort</code> orders, <code>$project</code> reshapes, <code>$lookup</code> joins, <code>$facet</code> runs several summaries at once. Put <code>$match</code> first so indexes can help.`,
+        `Date bucketing (<code>$dateTrunc</code>) and time zones are where analytics bugs hide. Store UTC, convert for display.`,
+      ],
+      objectives: [
+        `Write multi-stage aggregation pipelines`,
+        `Bucket by date with the right time zone`,
+        `Keep pipelines index-friendly`,
+      ],
+      build: {
+        title: "Notes analytics endpoint",
+        brief: `Add a <code>GET /stats</code> endpoint that returns a dashboard's worth of insights computed by the database.`,
+        steps: [
+          `Notes created per day for the last 30 days, in Asia/Kolkata time.`,
+          `Top 10 tags with counts and the share of total.`,
+          `Most active notebooks with member counts, using <code>$lookup</code>.`,
+          `All three in one round trip with <code>$facet</code>.`,
+          `Render the result as a small chart page in your React kit.`,
+        ],
+      },
+      checks: [
+        `Daily buckets line up with Indian midnight, not UTC midnight`,
+        `Days with zero notes still appear in the chart`,
+        `Pipeline starts with an indexed $match`,
+        `Endpoint responds in under 300ms on the 1-million-note dataset`,
+      ],
+      hints: [
+        `<code>$dateTrunc</code> takes a <code>timezone: "Asia/Kolkata"</code> option.`,
+        `Fill missing days in code after the query, or use <code>$densify</code> on newer MongoDB versions.`,
+        `MongoDB Compass has a visual aggregation builder that's great for experimenting.`,
+      ],
+      res: [
+        { t: "MongoDB: Aggregation", u: "https://www.mongodb.com/docs/manual/aggregation/", k: "doc" },
+        { t: "Practical MongoDB Aggregations (free book)", u: "https://www.practical-mongodb-aggregations.com/", k: "course" },
+        { t: "MongoDB Compass", u: "https://www.mongodb.com/products/tools/compass", k: "tool" },
+        { t: "MongoDB aggregation pipeline tutorial", yt: "mongodb aggregation pipeline tutorial" },
+      ],
+      iq: [
+        { q: "Why do analytics in the database instead of in Node?", a: `The database can use indexes, avoid transferring millions of rows over the network, and aggregate in optimised native code. Node would need to load everything into memory, which is slow and can crash under load.` },
+        { q: "How do you handle time zones in reports?", a: `Store timestamps in UTC, convert at query or display time using the user's time zone, and bucket by local day explicitly. Never store local times without a zone.` },
+      ],
+    },
+    {
+      id: "postgres-prisma",
+      title: "PostgreSQL, SQL and Prisma",
+      sub: "Joins, constraints, migrations and an ORM that stays typed",
+      hours: 3,
+      concept: [
+        `PostgreSQL is the most-loved relational database and shows up in most product companies' stacks. Knowing SQL directly is non-negotiable: SELECT with JOINs, GROUP BY, subqueries, window functions and CTEs are common interview and job tasks.`,
+        `Prisma generates a fully typed client from a schema file and manages migrations. It removes boilerplate, but you still need to know the SQL it produces, especially to avoid N+1 queries.`,
+        `Migrations are versioned changes to your schema. Never edit a production schema by hand; every change goes through a migration that's reviewed and committed.`,
+      ],
+      objectives: [
+        `Write JOINs, GROUP BY, CTEs and window functions by hand`,
+        `Model and migrate a schema with Prisma`,
+        `Spot and fix N+1 queries`,
+      ],
+      build: {
+        title: "SQL gym plus a Prisma API",
+        brief: `Part one: solve 30 SQL problems. Part two: rebuild a slice of your Notes API on PostgreSQL with Prisma.`,
+        steps: [
+          `Solve 30 problems on a free SQL practice site (easy to hard) and commit your queries with notes.`,
+          `Run Postgres in Docker, define users, notebooks, memberships and notes in <code>schema.prisma</code>.`,
+          `Create migrations, a seed script and the same repository interface you used before.`,
+          `Log the SQL Prisma generates and fix one N+1 query with <code>include</code> or a single query.`,
+          `Write one raw SQL report query with a window function (for example, each user's rank by notes created).`,
+        ],
+      },
+      checks: [
+        `30 SQL problems solved and committed`,
+        `Migrations run from scratch on an empty database`,
+        `Your earlier integration tests pass against Postgres too`,
+        `Logs show the N+1 fix reduced query count`,
+      ],
+      hints: [
+        `<code>docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=dev postgres:17</code> gives you a local Postgres.`,
+        `Enable query logging in Prisma with <code>new PrismaClient({ log: ["query"] })</code>.`,
+        `Window function shape: <code>RANK() OVER (ORDER BY note_count DESC)</code>.`,
+      ],
+      res: [
+        { t: "SQLBolt (interactive SQL)", u: "https://sqlbolt.com/", k: "course" },
+        { t: "PostgreSQL tutorial", u: "https://www.postgresqltutorial.com/", k: "course" },
+        { t: "Prisma docs", u: "https://www.prisma.io/docs", k: "doc" },
+        { t: "LeetCode SQL 50", u: "https://leetcode.com/studyplan/top-sql-50/", k: "tool" },
+        { t: "SQL full course", yt: "sql full course postgresql beginners" },
+      ],
+      iq: [
+        { q: "INNER vs LEFT JOIN?", a: `INNER returns only rows with matches on both sides. LEFT returns every row from the left table, with NULLs where the right side has no match. Use LEFT when missing matches are meaningful, like users with zero orders.` },
+        { q: "What is the N+1 query problem?", a: `Fetching a list with one query, then running one more query per item to load related data: N+1 round trips. Fix with joins, eager loading (include/populate) or batching (DataLoader).` },
+        { q: "WHERE vs HAVING?", a: `WHERE filters rows before grouping; HAVING filters groups after aggregation. Example: HAVING COUNT(*) &gt; 5 keeps only groups with more than five rows.` },
+      ],
+    },
+    {
+      id: "transactions-cache",
+      title: "Transactions, consistency and caching",
+      sub: "ACID, isolation levels, race conditions and Redis",
+      hours: 3,
+      concept: [
+        `A transaction groups several writes so they all succeed or all fail. ACID (atomicity, consistency, isolation, durability) is what lets a bank transfer debit one account and credit another without ever losing money in between.`,
+        `Concurrency causes subtle bugs: two people buy the last item at the same moment. Fixes include transactions with the right isolation level, row locks (<code>SELECT ... FOR UPDATE</code>), conditional updates (<code>UPDATE ... WHERE stock &gt; 0</code>) and optimistic locking with version numbers.`,
+        `Redis is an in-memory store used for caching, sessions, rate limits and queues. The common cache-aside pattern: read the cache, fall back to the database, write the result to the cache with a TTL, and invalidate on writes. "There are only two hard things: cache invalidation and naming things."`,
+      ],
+      objectives: [
+        `Use transactions for multi-step writes`,
+        `Prevent overselling under concurrency`,
+        `Add cache-aside caching with invalidation`,
+      ],
+      build: {
+        title: "Ticket booking race",
+        brief: `Build a tiny event-ticket API on Postgres where 100 concurrent buyers compete for 10 seats. Make it impossible to oversell, then add caching.`,
+        steps: [
+          `Naive version: read seats left, then update. Write a script firing 100 parallel purchases and show it oversells.`,
+          `Fix it with a transaction and a conditional update or row lock. Prove zero overselling.`,
+          `Add an idempotency key so retrying the same purchase doesn't book twice.`,
+          `Cache the event details with Redis cache-aside (60s TTL) and invalidate on update.`,
+          `Write up each bug, the fix, and the numbers.`,
+        ],
+      },
+      checks: [
+        `Naive version demonstrably oversells; fixed version never does across 20 runs`,
+        `Same idempotency key twice gives the same result and one booking`,
+        `Cache hit rate and response times recorded in the README`,
+        `Updating the event invalidates the cache immediately`,
+      ],
+      hints: [
+        `<code>UPDATE events SET seats_left = seats_left - 1 WHERE id = $1 AND seats_left &gt; 0 RETURNING seats_left</code> is atomic: zero rows returned means sold out.`,
+        `Prisma interactive transactions: <code>prisma.$transaction(async (tx) =&gt; { ... })</code>.`,
+        `Store idempotency keys in a table with a unique constraint and the saved response.`,
+      ],
+      res: [
+        { t: "PostgreSQL: Transaction isolation", u: "https://www.postgresql.org/docs/current/transaction-iso.html", k: "doc" },
+        { t: "Redis: Caching patterns", u: "https://redis.io/docs/latest/develop/use/patterns/", k: "doc" },
+        { t: "Stripe: Idempotent requests", u: "https://docs.stripe.com/api/idempotent_requests", k: "doc" },
+        { t: "Designing Data-Intensive Applications (book summary)", yt: "designing data intensive applications transactions isolation explained" },
+      ],
+      iq: [
+        { q: "How would you prevent two users from buying the last item?", a: `Make the stock decrement atomic and conditional inside the database, using a conditional UPDATE, a row lock with SELECT FOR UPDATE in a transaction, or optimistic locking with a version column. Never check-then-write in application code without a lock.` },
+        { q: "What are the risks of caching?", a: `Stale data, invalidation bugs, cache stampedes when a hot key expires, extra complexity and memory cost. Mitigate with sensible TTLs, invalidation on write, request coalescing or jittered expiry, and only caching what's measurably slow.` },
+        { q: "What does ACID mean?", a: `Atomicity: all or nothing. Consistency: constraints hold before and after. Isolation: concurrent transactions don't see each other's partial work (to a chosen level). Durability: once committed, it survives crashes.` },
+      ],
+    },
+  ],
+});

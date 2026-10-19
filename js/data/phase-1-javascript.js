@@ -389,7 +389,7 @@ window.PNODE.phases.push({
         { t: "npm docs: package.json", u: "https://docs.npmjs.com/cli/v10/configuring-npm/package-json", k: "doc" },
         { t: "Vitest guide", u: "https://vitest.dev/guide/", k: "doc" },
         { t: "ESLint: Getting started", u: "https://eslint.org/docs/latest/use/getting-started", k: "doc" },
-        { t: "GitHub Actions for Node.js", u: "https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-nodejs", k: "doc" },
+        { t: "GitHub Actions for Node.js", u: "https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs", k: "doc" },
       ],
       iq: [
         { q: "What's the difference between dependencies and devDependencies?", a: `dependencies are needed at runtime by whoever uses your code. devDependencies are only needed to build, test or lint it. Production installs (<code>npm ci --omit=dev</code>) skip dev ones.` },

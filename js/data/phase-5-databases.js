@@ -286,7 +286,7 @@ window.PNODE.phases.push({
       ],
       res: [
         { t: "PostgreSQL: Transaction isolation", u: "https://www.postgresql.org/docs/current/transaction-iso.html", k: "doc" },
-        { t: "Redis: Caching patterns", u: "https://redis.io/docs/latest/develop/use/patterns/", k: "doc" },
+        { t: "AWS: Caching patterns with Redis", u: "https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/caching-patterns.html", k: "doc" },
         { t: "Stripe: Idempotent requests", u: "https://docs.stripe.com/api/idempotent_requests", k: "doc" },
         { t: "Designing Data-Intensive Applications (book summary)", yt: "designing data intensive applications transactions isolation explained" },
       ],

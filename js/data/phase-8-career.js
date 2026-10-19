@@ -92,7 +92,6 @@ window.PNODE.phases.push({
       res: [
         { t: "Hello Interview: System design in a hurry", u: "https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction", k: "course" },
         { t: "System Design Primer: Example solutions", u: "https://github.com/donnemartin/system-design-primer#system-design-interview-questions-with-solutions", k: "doc" },
-        { t: "Pramp (free peer mock interviews)", u: "https://www.pramp.com/", k: "tool" },
         { t: "System design mock interview", yt: "system design mock interview url shortener" },
       ],
       iq: [
@@ -139,7 +138,7 @@ window.PNODE.phases.push({
       ],
       res: [
         { t: "NeetCode roadmap", u: "https://neetcode.io/roadmap", k: "course" },
-        { t: "Striver's A2Z DSA sheet", u: "https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2", k: "course" },
+        { t: "Striver's A2Z DSA sheet", u: "https://takeuforward.org/", k: "course" },
         { t: "LeetCode", u: "https://leetcode.com/", k: "tool" },
         { t: "Big-O cheat sheet", u: "https://www.bigocheatsheet.com/", k: "doc" },
         { t: "Coding interview patterns", yt: "coding interview patterns explained" },

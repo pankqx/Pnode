@@ -44,7 +44,7 @@ window.PNODE.phases.push({
         `Cookies live under Application → Storage → Cookies. <code>SameSite=Lax</code> is mainly about CSRF; <code>HttpOnly</code> stops JavaScript (and XSS) from reading it.`,
       ],
       res: [
-        { t: "MDN: How the web works", u: "https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Web_standards/How_the_web_works", k: "doc" },
+        { t: "MDN: How the web works", u: "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/How_the_Web_works", k: "doc" },
         { t: "MDN: An overview of HTTP", u: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview", k: "doc" },
         { t: "web.dev: How browsers work", u: "https://web.dev/articles/howbrowserswork", k: "doc" },
         { t: "What happens when you type a URL", yt: "what happens when you type a url in the browser explained" },

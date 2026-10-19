@@ -336,7 +336,8 @@
   function viewMind() {
     const st = S.get();
     const kinds = [...new Set(D.mind.map((d) => d.kind))];
-    const active = sessionStorage.getItem("pnode:mindKind") || "All";
+    let active = "All";
+    try { active = sessionStorage.getItem("pnode:mindKind") || "All"; } catch (e) { /* storage blocked */ }
     const list = D.mind.filter((d) => active === "All" || d.kind === active);
     $main.innerHTML = `
       <div class="page-head">
@@ -537,7 +538,7 @@
       renderHud();
       viewDrill(el.dataset.id);
     }
-    if (act === "mind-filter") { sessionStorage.setItem("pnode:mindKind", el.dataset.k); viewMind(); }
+    if (act === "mind-filter") { try { sessionStorage.setItem("pnode:mindKind", el.dataset.k); } catch (e) { /* storage blocked */ } viewMind(); }
     if (act === "theme") { S.setTheme(el.dataset.t === "system" ? null : el.dataset.t); applyTheme(); viewMe(); }
     if (act === "export") {
       const blob = new Blob([S.exportJson()], { type: "application/json" });

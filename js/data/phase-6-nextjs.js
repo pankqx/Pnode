@@ -1,1 +1,298 @@
-/* coming next */
+window.PNODE = window.PNODE || { phases: [], mind: [], capstones: [] };
+window.PNODE.phases.push({
+  id: "nextjs",
+  n: 6,
+  title: "Next.js, full stack",
+  tagline: "One framework for frontend and backend: server components, caching, server actions, auth and SEO.",
+  lessons: [
+    {
+      id: "next-app-router",
+      title: "App Router and server components",
+      sub: "Layouts, routing by folders, and where code runs",
+      hours: 3,
+      concept: [
+        `In the App Router, folders are routes, <code>page.tsx</code> is the screen, and <code>layout.tsx</code> wraps child routes and persists between navigations. Special files handle loading (<code>loading.tsx</code>), errors (<code>error.tsx</code>) and missing pages (<code>not-found.tsx</code>).`,
+        `Components are server components by default: they run on the server, can read the database directly, and send no JavaScript to the browser. Add <code>"use client"</code> only where you need state, effects or browser APIs, and keep those islands small and low in the tree.`,
+        `The key skill is deciding the boundary: fetch on the server, pass plain data down, and hydrate only the interactive leaves.`,
+      ],
+      objectives: [
+        `Build nested layouts and dynamic routes`,
+        `Choose server vs client components deliberately`,
+        `Read data directly in server components`,
+      ],
+      build: {
+        title: "Dev blog with server components",
+        brief: `Build a developer blog in Next.js where posts live in your Postgres database (via Prisma): home, post page, tag pages and an about page.`,
+        steps: [
+          `Root layout with header and footer, and a nested layout for <code>/blog</code>.`,
+          `Dynamic routes: <code>/blog/[slug]</code> and <code>/tags/[tag]</code>.`,
+          `Fetch posts with Prisma inside server components; no API route needed.`,
+          `Only the like button and theme toggle are client components.`,
+          `Custom <code>not-found</code> for missing posts and a <code>loading</code> skeleton.`,
+        ],
+      },
+      checks: [
+        `Fewer than three "use client" files in the whole app`,
+        `Post pages ship no JavaScript except the like button and theme toggle`,
+        `Missing slugs show your custom 404 with the right status code`,
+        `README diagram shows which components run where`,
+      ],
+      hints: [
+        `<code>npx create-next-app@latest</code> with TypeScript, Tailwind and the App Router.`,
+        `Call <code>notFound()</code> from <code>next/navigation</code> inside the page when a post is missing.`,
+        `You can pass server-fetched data as props into a client component; just keep it serialisable (no functions or class instances).`,
+      ],
+      res: [
+        { t: "Next.js: Learn course (free)", u: "https://nextjs.org/learn", k: "course" },
+        { t: "Next.js docs: App Router", u: "https://nextjs.org/docs/app", k: "doc" },
+        { t: "react.dev: Server Components", u: "https://react.dev/reference/rsc/server-components", k: "doc" },
+        { t: "Next.js App Router tutorial", yt: "next.js app router full tutorial" },
+      ],
+      iq: [
+        { q: "Server components vs client components?", a: `Server components render on the server, can access backend resources and send zero JS for themselves. Client components hydrate in the browser and can use state, effects and event handlers. Use server by default and client only for interactivity.` },
+        { q: "What does a layout give you that a page doesn't?", a: `Layouts wrap child routes, persist state and DOM across navigations between those children, and avoid re-rendering shared UI like navigation and sidebars.` },
+      ],
+    },
+    {
+      id: "next-data-cache",
+      title: "Data fetching, caching and revalidation",
+      sub: "Static, dynamic and incremental rendering",
+      hours: 3,
+      concept: [
+        `Next.js can render a page at build time (static), on every request (dynamic), or statically with periodic or on-demand refresh (incremental). Choosing per page is how you get both speed and freshness.`,
+        `Caching happens at several layers: fetched data, rendered routes and the client router. Revalidate by time, or on demand with <code>revalidatePath</code> and <code>revalidateTag</code> after data changes. Caching defaults have changed between Next.js versions, so always check the docs for your version.`,
+        `Parallel data fetching (start all requests, then await) avoids waterfalls where each request waits for the previous one.`,
+      ],
+      objectives: [
+        `Choose static, dynamic or revalidated rendering per route`,
+        `Invalidate cached data on demand`,
+        `Remove request waterfalls`,
+      ],
+      build: {
+        title: "Fresh but fast blog",
+        brief: `Tune your blog's rendering so every page is as static as possible while still showing new posts and counts promptly.`,
+        steps: [
+          `Make post pages static with <code>generateStaticParams</code>.`,
+          `Revalidate the home page every 60 seconds.`,
+          `When a post is published or edited, revalidate exactly the affected paths or tags.`,
+          `Fix a deliberate waterfall on the post page (post, author, related posts) with parallel fetching.`,
+          `Document the rendering mode of each route, as shown in the build output.`,
+        ],
+      },
+      checks: [
+        `Build output marks post pages as static or SSG`,
+        `A newly published post shows up without redeploying`,
+        `Post page data loads in parallel (measure before and after)`,
+        `README table lists every route and its rendering strategy`,
+      ],
+      hints: [
+        `<code>export const revalidate = 60</code> in a route segment sets time-based revalidation.`,
+        `<code>const [a, b] = await Promise.all([getA(), getB()])</code> removes the waterfall.`,
+        `Check <code>next build</code> output: symbols show which routes are static and which are dynamic.`,
+      ],
+      res: [
+        { t: "Next.js: Data fetching", u: "https://nextjs.org/docs/app/getting-started/fetching-data", k: "doc" },
+        { t: "Next.js: Caching and revalidating", u: "https://nextjs.org/docs/app/getting-started/caching-and-revalidating", k: "doc" },
+        { t: "Next.js: generateStaticParams", u: "https://nextjs.org/docs/app/api-reference/functions/generate-static-params", k: "doc" },
+        { t: "Next.js caching explained", yt: "next.js caching explained revalidate" },
+      ],
+      iq: [
+        { q: "SSR vs SSG vs ISR?", a: `SSR renders on every request (always fresh, more server cost). SSG renders at build time (fastest, can go stale). ISR serves static pages and regenerates them after a time or on demand, which balances speed and freshness.` },
+        { q: "What is a request waterfall and how do you fix it?", a: `Sequential requests where each waits for the previous one even though they don't depend on each other. Start independent requests together with Promise.all, or move fetching into parallel server components with Suspense.` },
+      ],
+    },
+    {
+      id: "next-server-actions",
+      title: "Server actions and mutations",
+      sub: "Forms that work without client JavaScript",
+      hours: 2,
+      concept: [
+        `Server actions are async functions marked <code>"use server"</code> that run on the server and can be called from forms or client code. A form with an action works even before JavaScript loads (progressive enhancement), then upgrades to a smooth experience.`,
+        `They're public endpoints in disguise: anyone can call them. Always validate input with Zod and check authentication and permissions inside every action.`,
+        `<code>useActionState</code> shows pending state and errors; <code>useOptimistic</code> updates the UI before the server confirms.`,
+      ],
+      objectives: [
+        `Build forms with server actions and validation`,
+        `Show pending, error and optimistic states`,
+        `Secure every action`,
+      ],
+      build: {
+        title: "Blog admin",
+        brief: `Add an admin area to your blog: create, edit, publish and delete posts, plus comments from readers.`,
+        steps: [
+          `Post editor form wired to a server action with Zod validation and field errors.`,
+          `Pending state on the submit button and a success redirect.`,
+          `Comments with <code>useOptimistic</code> so new comments appear instantly.`,
+          `Revalidate the right pages after each mutation.`,
+          `Test that the form works with JavaScript disabled.`,
+        ],
+      },
+      checks: [
+        `Every server action validates input and checks the user's role`,
+        `Creating a post works with JavaScript turned off`,
+        `Optimistic comments roll back with an error message if saving fails`,
+        `Published changes appear on public pages without a redeploy`,
+      ],
+      hints: [
+        `Return a plain object like <code>{ errors: fieldErrors }</code> from the action and read it with <code>useActionState</code>.`,
+        `Disable JavaScript in Chrome DevTools: Command Menu, then "Disable JavaScript".`,
+        `<code>redirect()</code> from <code>next/navigation</code> works inside server actions after a successful save.`,
+      ],
+      res: [
+        { t: "Next.js: Updating data (server actions)", u: "https://nextjs.org/docs/app/getting-started/updating-data", k: "doc" },
+        { t: "react.dev: useActionState", u: "https://react.dev/reference/react/useActionState", k: "doc" },
+        { t: "react.dev: useOptimistic", u: "https://react.dev/reference/react/useOptimistic", k: "doc" },
+        { t: "Next.js server actions tutorial", yt: "next.js server actions tutorial forms" },
+      ],
+      iq: [
+        { q: "Are server actions secure by default?", a: `No. They're exposed as POST endpoints that anyone can call with any payload. Validate inputs, authenticate and authorise inside every action, and never trust hidden form fields for ids or roles.` },
+        { q: "What is progressive enhancement?", a: `Building features that work with plain HTML first, then layering JavaScript for a richer experience. Forms submit even on slow networks or before hydration, which improves resilience and accessibility.` },
+      ],
+    },
+    {
+      id: "next-auth",
+      title: "Authentication in Next.js",
+      sub: "Auth.js, OAuth, sessions and protecting routes",
+      hours: 2,
+      concept: [
+        `Auth.js (NextAuth) handles OAuth sign-in (Google, GitHub), email links and credentials, with sessions stored as cookies or in your database through an adapter. You already know how auth works underneath from Phase 4, so now you're choosing a well-tested library over hand-rolling.`,
+        `Protect at every layer: middleware can redirect unauthenticated users early, but the real check must happen where data is read or changed (server components, route handlers and server actions).`,
+        `Add roles to the session so the UI can adapt, while the server still enforces permissions.`,
+      ],
+      objectives: [
+        `Set up OAuth sign-in with a database adapter`,
+        `Protect routes and actions server-side`,
+        `Add roles to sessions`,
+      ],
+      build: {
+        title: "Members-only blog",
+        brief: `Add GitHub sign-in to your blog. Readers can comment when signed in; only admins can reach the admin area.`,
+        steps: [
+          `Auth.js with the GitHub provider and the Prisma adapter.`,
+          `A <code>role</code> field on users; make your own account admin through a seed or SQL.`,
+          `Middleware redirects signed-out users from <code>/admin</code>.`,
+          `A <code>requireAdmin()</code> helper used inside every admin action and page.`,
+          `Sign-in and sign-out UI in the header with the user's avatar.`,
+        ],
+      },
+      checks: [
+        `Calling an admin server action as a non-admin fails, even by forging the request`,
+        `Secrets live in environment variables, documented in <code>.env.example</code>`,
+        `Session persists across refreshes and expires correctly`,
+        `Comments show the real author from the session, never from form input`,
+      ],
+      hints: [
+        `Create a GitHub OAuth app under Settings → Developer settings; the callback URL comes from the Auth.js docs for your version.`,
+        `Add the role to the session through the session callback.`,
+        `Test the forged request: copy the action's request from DevTools and replay it while signed in as a normal user.`,
+      ],
+      res: [
+        { t: "Auth.js docs", u: "https://authjs.dev/getting-started", k: "doc" },
+        { t: "Next.js: Authentication guide", u: "https://nextjs.org/docs/app/guides/authentication", k: "doc" },
+        { t: "OAuth 2.0 simplified", u: "https://www.oauth.com/", k: "doc" },
+        { t: "Next.js Auth.js tutorial", yt: "next.js authjs github login tutorial" },
+      ],
+      iq: [
+        { q: "How does OAuth login work?", a: `Your app redirects the user to the provider with your client id and requested scopes. The user consents, the provider redirects back with a short-lived code, your server exchanges the code (with your secret) for tokens, then fetches the user's profile and creates a session.` },
+        { q: "Is protecting a route in middleware enough?", a: `No. Middleware is a convenient first gate, but data can be reached through other paths: server actions, route handlers or direct requests. Check authorisation where data is read or written.` },
+      ],
+    },
+    {
+      id: "next-streaming-api",
+      title: "Route handlers, streaming and errors",
+      sub: "APIs inside Next.js, Suspense and resilient UI",
+      hours: 2,
+      concept: [
+        `Route handlers (<code>route.ts</code>) are API endpoints in Next.js. Use them for webhooks, public APIs and mobile clients. For your own app's forms, server actions are usually simpler.`,
+        `Streaming sends HTML as it's ready. Wrap slow parts in <code>Suspense</code> with a skeleton, and users see the page shell instantly while slower data fills in.`,
+        `Error boundaries (<code>error.tsx</code>) keep one broken widget from taking down the whole page, and give users a way to retry.`,
+      ],
+      objectives: [
+        `Build typed route handlers`,
+        `Stream slow sections with Suspense`,
+        `Contain failures with error boundaries`,
+      ],
+      build: {
+        title: "Blog API and resilient dashboard",
+        brief: `Add a public JSON API to your blog and an admin dashboard that stays usable even when parts of it are slow or broken.`,
+        steps: [
+          `<code>GET /api/posts</code> with pagination and a verified webhook endpoint (<code>POST /api/webhooks/newsletter</code>) that checks an HMAC signature.`,
+          `Admin dashboard with three widgets: post stats, recent comments, and a deliberately slow "traffic" widget.`,
+          `Stream each widget with its own Suspense boundary and skeleton.`,
+          `Make one widget throw randomly and contain it with an error boundary that has a retry button.`,
+          `Rate-limit the public API.`,
+        ],
+      },
+      checks: [
+        `Dashboard shell appears instantly while slow widgets stream in`,
+        `A failing widget doesn't break the rest of the page`,
+        `Webhook rejects requests with a wrong signature`,
+        `Public API returns proper cache headers`,
+      ],
+      hints: [
+        `Make a widget an async server component and wrap it: <code>&lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;&lt;Traffic /&gt;&lt;/Suspense&gt;</code>.`,
+        `HMAC check: compute <code>createHmac("sha256", secret).update(rawBody).digest("hex")</code> and compare with <code>timingSafeEqual</code>.`,
+        `Error boundaries receive a <code>reset</code> function; wire it to the retry button.`,
+      ],
+      res: [
+        { t: "Next.js: Route handlers", u: "https://nextjs.org/docs/app/getting-started/route-handlers-and-middleware", k: "doc" },
+        { t: "Next.js: Loading UI and streaming", u: "https://nextjs.org/docs/app/api-reference/file-conventions/loading", k: "doc" },
+        { t: "Next.js: Error handling", u: "https://nextjs.org/docs/app/getting-started/error-handling", k: "doc" },
+        { t: "Suspense and streaming in Next.js", yt: "next.js suspense streaming explained" },
+      ],
+      iq: [
+        { q: "How do you verify a webhook is genuine?", a: `The sender signs the raw request body with a shared secret (HMAC). You recompute the signature on the raw body and compare with a constant-time function. Also check a timestamp to block replays, and make the handler idempotent.` },
+        { q: "How does streaming improve user experience?", a: `The server sends the page shell and fast parts immediately, then streams slower sections as they resolve. Users see content sooner and can start interacting, instead of waiting for the slowest query.` },
+      ],
+    },
+    {
+      id: "next-seo-perf",
+      title: "SEO, performance and deployment",
+      sub: "Metadata, images, Core Web Vitals and shipping to Vercel",
+      hours: 2,
+      concept: [
+        `Search engines and social apps read metadata: titles, descriptions, Open Graph images, canonical URLs, sitemaps and structured data. The Metadata API generates these per page, including dynamic OG images.`,
+        `Core Web Vitals (LCP for loading, INP for responsiveness, CLS for visual stability) affect ranking and conversions. <code>next/image</code> and <code>next/font</code> fix the most common problems: oversized images and layout shift from late fonts.`,
+        `Deployment means preview environments per pull request, production environment variables, and monitoring. Vercel makes this easy for Next.js; knowing how to self-host with Docker is a bonus for senior roles.`,
+      ],
+      objectives: [
+        `Generate metadata, sitemap and OG images`,
+        `Hit green Core Web Vitals`,
+        `Deploy with preview environments`,
+      ],
+      build: {
+        title: "Ship the blog",
+        brief: `Make your blog production-ready and deploy it with a real database.`,
+        steps: [
+          `<code>generateMetadata</code> for every post, plus <code>sitemap.ts</code> and <code>robots.ts</code>.`,
+          `Dynamic OG images per post with the post title.`,
+          `Convert every image to <code>next/image</code> and fonts to <code>next/font</code>.`,
+          `Deploy to Vercel with a hosted Postgres (Neon or Supabase free tier), with migrations run on deploy.`,
+          `Turn on preview deployments for pull requests and test one.`,
+        ],
+      },
+      checks: [
+        `Lighthouse 95+ for performance, accessibility, best practices and SEO on a post page`,
+        `Sharing a post link on WhatsApp shows the title and OG image`,
+        `CLS is under 0.1 on mobile`,
+        `A pull request gets its own working preview URL`,
+      ],
+      hints: [
+        `An <code>opengraph-image.tsx</code> file inside a route segment generates the OG image for that route.`,
+        `Give images explicit width and height (or use <code>fill</code> with a sized parent) to stop layout shift.`,
+        `Use the Rich Results Test and a WhatsApp or Slack link preview to check metadata.`,
+      ],
+      res: [
+        { t: "Next.js: Metadata and OG images", u: "https://nextjs.org/docs/app/getting-started/metadata-and-og-images", k: "doc" },
+        { t: "web.dev: Core Web Vitals", u: "https://web.dev/articles/vitals", k: "doc" },
+        { t: "Vercel: Deploying Next.js", u: "https://vercel.com/docs/frameworks/full-stack/nextjs", k: "doc" },
+        { t: "Neon (serverless Postgres)", u: "https://neon.com/docs/introduction", k: "tool" },
+        { t: "Core Web Vitals explained", yt: "core web vitals lcp inp cls explained" },
+      ],
+      iq: [
+        { q: "What are Core Web Vitals?", a: `LCP (Largest Contentful Paint) measures loading, aiming for under 2.5s. INP (Interaction to Next Paint) measures responsiveness, aiming for under 200ms. CLS (Cumulative Layout Shift) measures visual stability, aiming for under 0.1.` },
+        { q: "How would you improve a slow LCP?", a: `Find the LCP element. Serve it smaller and in a modern format, preload or prioritise it, server-render it instead of client-rendering, cut render-blocking CSS and JS, and use a CDN. Measure with field data, not just Lighthouse.` },
+      ],
+    },
+  ],
+});

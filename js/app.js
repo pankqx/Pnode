@@ -455,7 +455,7 @@
     const lv = S.level();
     const theme = st.theme || "system";
     $main.innerHTML = `
-      <div class="page-head"><h1>Me</h1><p>Your progress lives only in this browser. Export it now and then so a cleared browser or a new laptop doesn't wipe your streak.</p></div>
+      <div class="page-head"><h1>Me</h1><p>Your progress lives only in this browser. Back it up now and then so a cleared browser or a new laptop doesn't wipe your streak.</p></div>
       <div class="me-grid">
         <section class="panel">
           <h2 style="margin-bottom:12px">The ladder</h2>
@@ -478,10 +478,20 @@
           </div>
           <h2 style="margin:24px 0 12px">Backup</h2>
           <div class="btn-row">
-            <button class="btn" type="button" data-act="export">Export progress</button>
-            <label class="btn" for="import-file" tabindex="0">Import progress</label>
+            <button class="btn" type="button" data-act="export">Download backup file</button>
+            <label class="btn" for="import-file">Restore from file</label>
             <input id="import-file" type="file" accept="application/json,.json" class="visually-hidden">
+          </div>
+          <p class="small muted" style="margin:16px 0 8px">Or copy your backup as text, and paste one here to restore it on another device.</p>
+          <label for="backup-text" class="visually-hidden">Backup text</label>
+          <textarea id="backup-text" style="min-height:90px;font-family:var(--f-code);font-size:0.8rem" placeholder="Paste a Pnode backup here"></textarea>
+          <div class="btn-row" style="margin-top:8px">
+            <button class="btn" type="button" data-act="copy-backup">Copy backup</button>
+            <button class="btn" type="button" data-act="paste-import">Restore from pasted text</button>
+          </div>
+          <div style="margin-top:20px;border-top:1px solid var(--line);padding-top:12px">
             <button class="btn btn-quiet" type="button" data-act="reset" style="color:var(--danger)">Reset everything</button>
+            <div id="reset-zone"></div>
           </div>
         </section>
       </div>`;
@@ -510,10 +520,16 @@
     if (act === "start-session") { S.startSession(); renderSession(); route(); toast("Hour started. Phone face down."); }
     if (act === "end-session") { S.endSession(); renderSession(); route(); }
     if (act === "hint") { S.revealHint(id); viewLesson(id); const hs = $main.querySelectorAll(".hint"); hs[hs.length - 1]?.scrollIntoView({ block: "center", behavior: "smooth" }); }
-    if (act === "complete") {
+    if (act === "cancel-complete") { viewLesson(id); return; }
+    if (act === "complete" || act === "complete-force") {
       const l = byId[id];
       const ticked = (S.get().checks[id] || []).length;
-      if (ticked < l.checks.length && !confirm(`Only ${ticked} of ${l.checks.length} checks are ticked. Mark as built anyway?`)) return;
+      if (ticked < l.checks.length && act === "complete") {
+        const box = $main.querySelector(".complete-box .panel");
+        box.innerHTML = `<p class="big">Only ${ticked} of ${l.checks.length} checks ticked.</p><p class="muted">Mark it built anyway? You can come back and finish the checks later.</p><div class="btn-row"><button class="btn btn-lit" type="button" data-act="complete-force">Mark as built anyway</button><button class="btn btn-quiet" type="button" data-act="cancel-complete">Keep working</button></div>`;
+        box.querySelector("[data-act=complete-force]").focus();
+        return;
+      }
       const before = S.level().index;
       const gained = S.completeLesson(id);
       const after = S.level();
@@ -546,11 +562,30 @@
       a.href = URL.createObjectURL(blob);
       a.download = `pnode-progress-${S.today()}.json`;
       document.body.appendChild(a); a.click(); a.remove();
-      toast("Progress exported");
+      toast("Backup file saved");
+    }
+    if (act === "copy-backup") {
+      const text = S.exportJson();
+      const box = $main.querySelector("#backup-text");
+      box.value = text;
+      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(
+        () => toast("Backup copied. Paste it into a note to keep it safe."),
+        () => { box.focus(); box.select(); toast("Select all and copy the text below."); }
+      );
+    }
+    if (act === "paste-import") {
+      const text = $main.querySelector("#backup-text").value.trim();
+      if (!text) { toast("Paste a backup into the box first."); return; }
+      try { S.importJson(text); toast("Progress restored"); route(); }
+      catch (err) { toast("That text isn't a Pnode backup. Paste the whole thing, including the braces."); }
     }
     if (act === "reset") {
-      if (confirm("Reset all progress, notes and streak? This can't be undone unless you exported a backup.")) { S.reset(); renderHud(); toast("Progress reset"); route(); }
+      const zone = $main.querySelector("#reset-zone");
+      zone.innerHTML = `<p class="small" style="color:var(--danger);margin:12px 0 8px"><b>Reset all progress, notes and your streak?</b> This can't be undone unless you saved a backup.</p><div class="btn-row"><button class="btn" type="button" data-act="reset-confirm" style="border-color:var(--danger);color:var(--danger)">Yes, reset everything</button><button class="btn btn-quiet" type="button" data-act="reset-cancel">Cancel</button></div>`;
+      zone.querySelector("[data-act=reset-confirm]").focus();
     }
+    if (act === "reset-cancel") { $main.querySelector("#reset-zone").innerHTML = ""; }
+    if (act === "reset-confirm") { S.reset(); renderHud(); toast("Progress reset"); route(); }
   });
 
   document.addEventListener("change", (e) => {

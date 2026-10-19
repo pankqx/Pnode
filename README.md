@@ -7,7 +7,7 @@ A build-it-yourself path from web basics to senior full-stack engineer, in TypeS
 - **Capstones**: three production-grade projects (Taskforge, Bazaar, Pulse) with milestones and the senior signals reviewers look for.
 - **XP, levels and streaks**: Intern → Principal. Any XP on a day keeps the streak alive.
 
-Progress is stored in your browser (localStorage). Use **Me → Export progress** to back it up or move it to another device.
+Progress is stored in your browser (localStorage). Use **Me → Copy backup** (or Download backup file) to save it, and paste or load it on another device to restore.
 
 ## Run it
 

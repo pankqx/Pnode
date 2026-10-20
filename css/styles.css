@@ -460,7 +460,7 @@ textarea:focus, input[type="text"]:focus { outline: 2px solid var(--lit); outlin
 .vseq-actor { grid-row: 1; justify-self: center; z-index: 1; font: 700 0.82rem var(--f-body); padding: 6px 10px; border-radius: 8px; background: var(--bg-raised); border: 1px solid var(--line-strong); text-align: center; margin-bottom: 4px; }
 .vseq-life { position: absolute; top: 34px; bottom: 0; width: 0; border-left: 2px dashed var(--line); transform: translateX(-1px); }
 .vseq-step { position: relative; z-index: 1; min-height: 30px; display: flex; flex-direction: column; justify-content: flex-end; opacity: 0.16; }
-.vseq-step:not(.on) .vseq-label, .vseq-step:not(.on).vseq-self span { color: transparent; }
+.vseq .vseq-step:not(.on) .vseq-label, .vseq .vseq-step:not(.on).vseq-self span { color: transparent; border-color: var(--line); }
 .vseq-step.on { opacity: 1; transition: opacity 250ms; }
 .vseq-label { display: block; text-align: center; font-size: 0.78rem; line-height: 1.25; color: var(--ink-2); padding: 0 6px 3px; }
 .vseq-line { display: block; height: 2px; background: var(--ink-3); margin: 0 calc(50% / var(--k)); position: relative; }

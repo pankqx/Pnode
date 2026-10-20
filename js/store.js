@@ -10,6 +10,7 @@
     interview: 5,     // each interview question reviewed
     drill: 25,        // each Mind drill written up
     milestone: 250,   // each capstone milestone
+    problem: 5,       // each DSA problem logged
   };
 
   const LEVELS = [
@@ -38,6 +39,8 @@
       log: {},       // YYYY-MM-DD -> xp earned that day
       session: null, // { start: ms }
       theme: null,
+      hours: 2,      // daily session length: 1 or 2
+      problems: {},  // lessonId -> problems solved for that pattern
     };
   }
 
@@ -136,6 +139,17 @@
     endSession() { state.session = null; save(); },
 
     setTheme(t) { state.theme = t; save(); },
+    setHours(n) { state.hours = n === 1 ? 1 : 2; save(); },
+    addProblem(lessonId, delta) {
+      const cur = state.problems[lessonId] || 0;
+      const next = Math.max(0, cur + delta);
+      if (next === cur) return cur;
+      state.problems[lessonId] = next;
+      logXp((next - cur) * XP.problem);
+      save();
+      return next;
+    },
+    totalProblems() { return Object.values(state.problems).reduce((a, b) => a + b, 0); },
 
     totalXp() {
       let xp = 0;
@@ -144,6 +158,7 @@
       for (const id in state.iq) xp += state.iq[id].length * XP.interview;
       xp += Object.keys(state.mind).length * XP.drill;
       for (const id in state.cap) xp += state.cap[id].length * XP.milestone;
+      for (const id in state.problems) xp += state.problems[id] * XP.problem;
       return xp;
     },
     level(xp) {

@@ -355,7 +355,7 @@ textarea:focus, input[type="text"]:focus { outline: 2px solid var(--lit); outlin
 .ladder li[data-reached="1"] { color: var(--ink); }
 .ladder li[data-current="1"] b { color: var(--lit); }
 .me-grid { display: grid; gap: var(--s-4); }
-@media (min-width: 900px) { .me-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .me-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
 
 /* ---------- toast ---------- */
 .toast {

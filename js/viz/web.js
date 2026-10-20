@@ -8,7 +8,7 @@
     id: "request-journey",
     title: "From URL bar to pixels",
     blurb: "Every message your browser sends before you see a page",
-    nodes: ["how-the-web-works"],
+    nodes: ["how-the-web-works", "networks"],
     mount(root, ctx) {
       sequence(ctx, root, {
         actors: ["Browser", "DNS resolver", "Server"],

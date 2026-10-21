@@ -93,7 +93,8 @@
     const lv = S.level();
     $hud.innerHTML =
       `<span class="hud-item flame" title="Day streak">${I.flame}<b>${S.streak()}</b></span>` +
-      `<span class="hud-item" title="Total XP">${I.bolt}<b>${lv.xp.toLocaleString()}</b><span class="visually-hidden">XP</span></span>`;
+      `<span class="hud-item" title="Total XP">${I.bolt}<b>${lv.xp.toLocaleString()}</b><span class="visually-hidden">XP</span></span>` +
+      `<span class="hud-me" title="Me">${'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'}</span>`;
   }
   function applyTheme() {
     const t = S.get().theme;
@@ -269,10 +270,25 @@
     }).join("");
 
     $main.innerHTML = `
-      <div class="greeting">
-        <h1>${hello}</h1>
-        <p>${doneCount === 0 ? "Phone face down, Instagram closed. Start with the first node." : `${doneCount} of ${LESSONS.length} path nodes built · ${Object.keys(st.read).length} of ${LIB.length} Library lessons read.`}</p>
-      </div>
+      <section class="hero" aria-labelledby="hero-title">
+        <canvas class="hero-sky" aria-hidden="true"></canvas>
+        <div class="hero-in">
+          <p class="hero-kicker">${daysLeft()} days to August · ${esc(lv.name)}</p>
+          <h1 id="hero-title">${hello}</h1>
+          <p class="hero-sub">Every dot behind this text is one lesson. The gold ones are yours. Light up the sky.</p>
+          <div class="hero-stats">
+            <div><b data-count="${doneCount}">0</b><span>nodes built</span></div>
+            <div><b data-count="${Object.keys(st.read).filter((k) => libById[k]).length}">0</b><span>lessons read</span></div>
+            <div><b data-count="${S.totalProblems()}">0</b><span>DSA problems</span></div>
+            <div><b data-count="${lv.xp}">0</b><span>XP</span></div>
+          </div>
+          <div class="btn-row">
+            ${nl ? `<a class="btn btn-lit" href="#/lesson/${nl.id}">Continue: ${esc(nl.title)}</a>` : ""}
+            <a class="btn" href="#/progress">See all progress</a>
+            <a class="btn" href="#/tutor">Ask ${esc(tutorName())}</a>
+          </div>
+        </div>
+      </section>
       <div class="today-grid">
         <div class="stack-col">
           ${nextHtml}
@@ -321,8 +337,11 @@
           </section>
         </div>
       </div>`;
+    heroStop = startConstellation($main.querySelector(".hero-sky"));
+    countUp($main.querySelector(".hero"));
   }
 
+  function tutorName() { try { return JSON.parse(localStorage.getItem("pnode:tutor") || "{}").name || "Nova"; } catch (e) { return "Nova"; } }
   function heatmap(weeks) {
     const log = S.get().log;
     const end = new Date();
@@ -554,7 +573,7 @@
             <h2 id="s-notes">${I.pen} Your notes</h2>
             <label for="notes" class="visually-hidden">Notes for this node</label>
             <textarea id="notes" placeholder="What clicked, what broke, what you'd do differently. Future you will read this before interviews.">${esc(st.notes[id] || "")}</textarea>
-            <div class="btn-row" style="margin-top:12px"><button class="btn btn-quiet" type="button" data-act="ask">${I.chat.replace("<svg", '<svg width="18" height="18"')} Copy a question for Claude</button></div>
+            <div class="btn-row" style="margin-top:12px"><a class="btn btn-lit" href="#/tutor/node/${l.id}">${I.chat.replace("<svg", '<svg width="18" height="18"')} Ask ${esc(tutorName())} for a hint</a><button class="btn btn-quiet" type="button" data-act="ask">Copy a question for Claude</button></div>
           </section>
           <section class="section complete-box" aria-labelledby="s-done">
             <h2 id="s-done" class="visually-hidden">Complete</h2>
@@ -613,12 +632,14 @@
     $main.innerHTML = `
       <div class="page-head">
         <h1>Library</h1>
-        <p>${total} lessons in simple English, each with a real-life example, a fact and a quick quiz. ${read} read so far.</p>
+        <p>${total} lessons in simple English, each with a real-life example, a fact and a quick quiz. ${read} read so far. <a href="#/lab">Open the Lab</a> for every interactive explainer.</p>
       </div>
       <label class="visually-hidden" for="lib-search">Search the Library</label>
       <input id="lib-search" class="lib-search" type="search" placeholder="Search lessons: TCP, inflation, negotiation, Docker…" autocomplete="off">
       <div id="lib-results" class="lib-results" hidden></div>
-      <div id="lib-groups">${groupHtml}</div>`;
+      <div id="lib-groups">${groupHtml}
+        <div class="deeper">${refsHtml(D.deeper, "Beyond Pnode: university and IIT-depth CS, all free")}<p class="muted small">Pnode gives you breadth and job skills. These give you the depth of a full CS degree. Pick one course at a time and do its problem sets.</p></div>
+      </div>`;
     const input = $main.querySelector("#lib-search"), results = $main.querySelector("#lib-results"), groups = $main.querySelector("#lib-groups");
     input.addEventListener("input", () => {
       const q = input.value.trim().toLowerCase();
@@ -629,6 +650,12 @@
     });
   }
 
+  const REFS = D.refs || {};
+  const refKind = { course: I.course, book: I.book, video: I.video, docs: I.doc, site: I.globe };
+  function refsHtml(list, title) {
+    if (!list || !list.length) return "";
+    return `<section class="refs" aria-label="${esc(title)}"><h2>${esc(title)}</h2><ul class="ref-list">${list.map((r) => `<li><a class="ref" href="${esc(r.u)}" target="_blank" rel="noopener"><span class="ref-ico" aria-hidden="true">${refKind[r.kind] || I.doc}</span><span><b>${esc(r.t)}</b><span class="muted small">${esc(r.why || (r.kind === "book" && r.free === false ? "Book (check your college library) · video summary link" : r.kind === "video" ? "YouTube" : r.kind === "course" ? "Free course" : r.kind === "docs" ? "Official docs" : "Website"))}</span></span></a></li>`).join("")}</ul></section>`;
+  }
   function viewArea(id) {
     const a = areaById[id];
     if (!a) return viewNotFound();
@@ -648,7 +675,8 @@
       ${a.modules.map((m, mi) => `<section class="module" aria-labelledby="m-${mi}">
         <h2 id="m-${mi}"><span class="module-num">${mi + 1}</span>${esc(m.title)}</h2>
         <div class="lesson-rows">${m.lessons.map((l) => `<a class="lesson-row" href="#/read/${l.id}"><span class="lr-dot ${st.read[l.id] ? "on" : ""}" aria-hidden="true"></span><span><b>${esc(l.t)}</b></span><span class="muted small">${l.mins || 4} min</span></a>`).join("")}</div>
-      </section>`).join("")}`;
+      </section>`).join("")}
+      ${refsHtml(REFS[a.id], "Go deeper: videos, books and courses")}`;
   }
 
   function viewRead(id) {
@@ -681,6 +709,7 @@
             return `<div class="rquiz" data-qid="${esc(qid)}"><p class="rq">${esc(q.q)}</p><div class="fc-quiz">${q.o.map((o, n) => `<button type="button" class="fc-opt ${ans != null && n === q.a ? "right" : ""}" data-act="read-answer" data-k="${n}" ${ans != null ? "disabled" : ""}>${esc(o)}</button>`).join("")}</div><p class="fc-why" ${ans != null ? "" : "hidden"}>${esc(q.why || "")}</p></div>`;
           }).join("")}
         </section>` : ""}
+        <section class="section tutor-cta"><a class="btn" href="#/tutor/read/${l.id}">${I.chat.replace("<svg", '<svg width="18" height="18"')} Ask ${esc(tutorName())} about this lesson</a></section>
         <section class="section complete-box">
           ${st.read[id] ? `<p class="done-stamp">${I.check.replace("<svg", '<svg width="22" height="22"')} Read on ${esc(st.read[id])}</p>` : `<button class="btn btn-lit" type="button" data-act="mark-read">Mark as read · +${S.XP.read} XP</button>`}
         </section>
@@ -902,6 +931,220 @@
     $main.innerHTML = `<div class="empty"><h2>That page doesn't exist.</h2><p>It may have been renamed. Head back to today.</p><a class="btn" href="#/today">Open today</a></div>`;
   }
 
+  // ---------- hero constellation (Today) ----------
+  // Every dot is a lesson: lit amber when you've done it, dim when you haven't.
+  let heroStop = null;
+  function startConstellation(canvas) {
+    const st = S.get();
+    const items = LESSONS.map((l) => !!st.done[l.id]).concat(LIB.map((l) => !!st.read[l.id]));
+    const ctx2 = canvas.getContext("2d");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let w = 0, h = 0, raf = 0, running = true;
+    let seed = 7;
+    const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    const pts = items.map((lit, i) => ({ x: rnd(), y: rnd(), vx: (rnd() - 0.5) * 0.00018, vy: (rnd() - 0.5) * 0.00018, lit, r: lit ? 2.4 : 1.4, ph: rnd() * 6.28, i }));
+    function size() {
+      const r = canvas.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+      w = r.width; h = r.height; canvas.width = w * dpr; canvas.height = h * dpr; ctx2.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function colors() {
+      const cs = getComputedStyle(document.documentElement);
+      return { lit: cs.getPropertyValue("--lit").trim() || "#F5B83D", dim: cs.getPropertyValue("--sky").trim() || "#7FB7E8" };
+    }
+    let col = colors();
+    function frame(t) {
+      if (!running) return;
+      ctx2.clearRect(0, 0, w, h);
+      const link = Math.min(w, h) * 0.16;
+      for (const p of pts) {
+        if (!reduce) { p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > 1) p.vx *= -1; if (p.y < 0 || p.y > 1) p.vy *= -1; }
+      }
+      ctx2.lineWidth = 1;
+      for (let a = 0; a < pts.length; a++) {
+        const p = pts[a], px = p.x * w, py = p.y * h;
+        for (let b = a + 1; b < pts.length; b++) {
+          const q = pts[b], dx = px - q.x * w, dy = py - q.y * h, d = Math.hypot(dx, dy);
+          if (d < link) {
+            ctx2.strokeStyle = p.lit && q.lit ? col.lit : col.dim;
+            ctx2.globalAlpha = (1 - d / link) * (p.lit && q.lit ? 0.55 : 0.12);
+            ctx2.beginPath(); ctx2.moveTo(px, py); ctx2.lineTo(q.x * w, q.y * h); ctx2.stroke();
+          }
+        }
+      }
+      for (const p of pts) {
+        const tw = reduce ? 1 : 0.65 + 0.35 * Math.sin(t / 900 + p.ph);
+        ctx2.globalAlpha = p.lit ? tw : 0.35 * tw;
+        ctx2.fillStyle = p.lit ? col.lit : col.dim;
+        ctx2.beginPath(); ctx2.arc(p.x * w, p.y * h, p.r, 0, 6.283); ctx2.fill();
+        if (p.lit) { ctx2.globalAlpha = 0.12 * tw; ctx2.beginPath(); ctx2.arc(p.x * w, p.y * h, p.r * 4, 0, 6.283); ctx2.fill(); }
+      }
+      ctx2.globalAlpha = 1;
+      if (!reduce) raf = requestAnimationFrame(frame);
+    }
+    size();
+    const ro = new ResizeObserver(() => { size(); if (reduce) frame(0); });
+    ro.observe(canvas);
+    const mo = new MutationObserver(() => { col = colors(); });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    raf = requestAnimationFrame(frame);
+    return () => { running = false; cancelAnimationFrame(raf); ro.disconnect(); mo.disconnect(); };
+  }
+  function countUp(root) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    root.querySelectorAll("[data-count]").forEach((el) => {
+      const to = +el.dataset.count;
+      if (reduce || !to) { el.textContent = to.toLocaleString(); return; }
+      const t0 = performance.now(), dur = 1100;
+      const step = (t) => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to * e).toLocaleString(); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    });
+  }
+
+  // ---------- views: progress dashboard ----------
+  function ring(pct, label, sub, color) {
+    const r = 34, c = 2 * Math.PI * r, p = Math.max(0, Math.min(1, pct));
+    return `<div class="ring-card">
+      <svg viewBox="0 0 84 84" class="ring" aria-hidden="true"><circle cx="42" cy="42" r="${r}" class="ring-bg"/><circle cx="42" cy="42" r="${r}" class="ring-fg" style="stroke:${color};--c:${c.toFixed(1)};--o:${(c * (1 - p)).toFixed(1)}" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${c.toFixed(1)}"/></svg>
+      <div class="ring-pct">${Math.round(p * 100)}%</div>
+      <b>${esc(label)}</b><span class="muted small">${esc(sub)}</span>
+    </div>`;
+  }
+  function xpBars(days) {
+    const log = S.get().log, vals = [];
+    for (let i = days - 1; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); vals.push({ k: S.today(d), v: log[S.today(d)] || 0, d }); }
+    const max = Math.max(100, ...vals.map((x) => x.v)), W = 600, H = 160, bw = W / days;
+    const bars = vals.map((x, i) => { const bh = Math.max(x.v ? 3 : 0, (x.v / max) * (H - 24)); return `<rect class="xpbar" style="--i:${i}" x="${(i * bw + 2).toFixed(1)}" y="${(H - 18 - bh).toFixed(1)}" width="${(bw - 4).toFixed(1)}" height="${bh.toFixed(1)}" rx="2"><title>${x.k}: ${x.v} XP</title></rect>`; }).join("");
+    const labels = vals.map((x, i) => (i % 7 === days % 7 || i === days - 1 ? `<text x="${(i * bw + bw / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle">${x.d.getDate()}/${x.d.getMonth() + 1}</text>` : "")).join("");
+    const total = vals.reduce((a, x) => a + x.v, 0), active = vals.filter((x) => x.v).length;
+    return { svg: `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="XP earned each day for the last ${days} days">${bars}${labels}</svg>`, total, active };
+  }
+  function planChart() {
+    if (!PLAN) return "";
+    const st = S.get();
+    const start = new Date(PLAN.start + "T00:00:00"), end = new Date(PLAN.end + "T23:59:59"), now = new Date();
+    const doneDates = Object.entries(st.done).filter(([id]) => byId[id]).map(([, d]) => d).concat(Object.entries(st.read).filter(([id]) => libById[id]).map(([, d]) => d)).sort();
+    const exp = (d) => expected("build", d) + expected("core", d) + expected("library", d);
+    const goal = exp(end), W = 600, H = 200, pad = 28;
+    const X = (d) => pad + ((d - start) / (end - start)) * (W - pad * 2), Y = (v) => H - pad - (v / Math.max(1, goal)) * (H - pad * 2);
+    let ep = "", ap = "";
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 7)) ep += `${ep ? "L" : "M"}${X(d).toFixed(1)},${Y(exp(d)).toFixed(1)}`;
+    let n = 0, i = 0;
+    for (let d = new Date(start); d <= now && d <= end; d.setDate(d.getDate() + 1)) {
+      const k = S.today(d); while (i < doneDates.length && doneDates[i] <= k) { n++; i++; }
+      ap += `${ap ? "L" : "M"}${X(d).toFixed(1)},${Y(n).toFixed(1)}`;
+    }
+    n += doneDates.length - i;
+    const nx = X(Math.min(now, end));
+    const months = PLAN.months.map((m) => { const d = new Date(m.ends + "T00:00:00"); return `<text x="${X(d).toFixed(1)}" y="${H - 8}" text-anchor="end">${m.label.split(" ")[0]}</text>`; }).join("");
+    return `<svg viewBox="0 0 ${W} ${H}" class="chart plan-chart" role="img" aria-label="Planned versus actual: ${n} of ${goal} units done">
+      <line x1="${pad}" x2="${W - pad}" y1="${H - pad}" y2="${H - pad}" class="axis"/>
+      <path d="${ep}" class="exp-line"/>
+      ${ap ? `<path d="${ap}" class="act-line"/>` : ""}
+      <line x1="${nx.toFixed(1)}" x2="${nx.toFixed(1)}" y1="${pad / 2}" y2="${H - pad}" class="now-line"/>
+      <circle cx="${nx.toFixed(1)}" cy="${Y(n).toFixed(1)}" r="5" class="act-dot"/>
+      ${months}
+    </svg>
+    <div class="legend"><span><i class="lg exp"></i>Plan</span><span><i class="lg act"></i>You (${n} of ${goal} nodes + lessons)</span></div>`;
+  }
+  let pgFilter = "all";
+  function rerenderProgress() {
+    const y = window.scrollY;
+    const open = [...$main.querySelectorAll(".pg-group")].map((d) => d.open);
+    viewProgress();
+    $main.querySelectorAll(".pg-group").forEach((d, i) => { if (open[i] != null) d.open = open[i]; });
+    window.scrollTo(0, y);
+  }
+  function viewProgress() {
+    const st = S.get();
+    const build = trackLessons("build"), core = trackLessons("core");
+    const bDone = build.filter((l) => st.done[l.id]).length, cDone = core.filter((l) => st.done[l.id]).length;
+    const rDone = LIB.filter((l) => st.read[l.id]).length;
+    const msTotal = D.capstones.reduce((a, c) => a + c.milestones.length, 0), msDone = D.capstones.reduce((a, c) => a + (st.cap[c.id] || []).length, 0);
+    const mDone = Object.keys(st.mind).length;
+    const probs = S.totalProblems(), pTarget = (PLAN && PLAN.problemsTarget) || 300;
+    const qs = Object.values(st.quiz || {}), qRight = qs.filter(Boolean).length;
+    const xb = xpBars(30);
+    const show = (on) => pgFilter === "all" || (pgFilter === "done" ? on : !on);
+    const box = (on, act, attrs, label, href, meta) => show(on) ? `<li class="pg-item ${on ? "on" : ""}"><label class="pg-check"><input type="checkbox" data-act="${act}" ${attrs} ${on ? "checked" : ""}><span class="pg-box" aria-hidden="true">${I.check}</span><span class="visually-hidden">${esc(label)}</span></label><a href="${href}">${esc(label)}</a>${meta ? `<span class="muted small">${esc(meta)}</span>` : ""}</li>` : "";
+    const group = (title, items, done, total, open) => `<details class="pg-group" ${open ? "open" : ""}><summary><span class="pg-title">${esc(title)}</span><span class="pg-count">${done}/${total}</span><span class="meter pg-meter"><i style="width:${total ? (done / total) * 100 : 0}%"></i></span></summary><ul class="pg-list">${items || `<li class="muted small">Nothing here for this filter.</li>`}</ul></details>`;
+
+    const pathHtml = D.phases.map((p, pi) => {
+      const done = p.lessons.filter((l) => st.done[l.id]).length;
+      return group(`${phaseLabel(p)} · ${p.title}`, p.lessons.map((l) => box(!!st.done[l.id], "pg-node", `data-id="${l.id}"`, `${nodeLabel(l)} ${l.title}`, `#/lesson/${l.id}`, st.done[l.id] ? st.done[l.id] : "")).join(""), done, p.lessons.length, pi === 0 || (done > 0 && done < p.lessons.length));
+    }).join("");
+    const libHtml = AREAS.map((a) => {
+      const ls = areaLessons(a), done = ls.filter((l) => st.read[l.id]).length;
+      return group(a.title, ls.map((l) => box(!!st.read[l.id], "pg-read", `data-id="${l.id}"`, l.t, `#/read/${l.id}`, st.read[l.id] || "")).join(""), done, ls.length, done > 0 && done < ls.length);
+    }).join("");
+    const capHtml = D.capstones.map((c) => {
+      const got = st.cap[c.id] || [];
+      return group(c.name, c.milestones.map((m, i) => box(got.includes(i), "pg-ms", `data-cap="${c.id}" data-i="${i}"`, m.title, `#/capstone/${c.id}`, "")).join(""), got.length, c.milestones.length, got.length > 0 && got.length < c.milestones.length);
+    }).join("");
+    const mindHtml = group("Mind drills", D.mind.filter((d) => show(!!st.mind[d.id])).map((d) => `<li class="pg-item ${st.mind[d.id] ? "on" : ""}"><span class="pg-check"><span class="pg-box ${st.mind[d.id] ? "" : "empty"}" aria-hidden="true">${I.check}</span></span><a href="#/drill/${d.id}">${esc(d.title)}</a><span class="muted small">${esc(st.mind[d.id] ? st.mind[d.id].at : d.kind)}</span></li>`).join(""), mDone, D.mind.length, false);
+
+    // weakest areas by quiz accuracy
+    const byArea = {};
+    Object.entries(st.quiz || {}).forEach(([qid, ok]) => { const l = libById[qid.split("#")[0]]; if (!l) return; const a = (byArea[l.area.id] = byArea[l.area.id] || { a: l.area, n: 0, r: 0 }); a.n++; if (ok) a.r++; });
+    const weak = Object.values(byArea).filter((x) => x.n >= 3).sort((x, y) => x.r / x.n - y.r / y.n).slice(0, 3);
+
+    $main.innerHTML = `
+      <div class="page-head">
+        <h1>Progress</h1>
+        <p>Everything you've studied, and everything still waiting. Tick boxes to mark things done (or undone) from here.</p>
+      </div>
+      <section class="ring-row" aria-label="Completion">
+        ${ring(bDone / build.length, "Build path", `${bDone} of ${build.length} nodes`, "var(--lit)")}
+        ${ring(core.length ? cDone / core.length : 0, "Core CS", `${cDone} of ${core.length} nodes`, "var(--sky)")}
+        ${ring(rDone / LIB.length, "Library", `${rDone} of ${LIB.length} lessons`, "var(--mint)")}
+        ${ring(msTotal ? msDone / msTotal : 0, "Capstones", `${msDone} of ${msTotal} milestones`, "var(--plum)")}
+        ${ring(probs / pTarget, "ProntoPy", `${probs} of ${pTarget} problems`, "var(--lit)")}
+        ${ring(mDone / D.mind.length, "Mind drills", `${mDone} of ${D.mind.length} written`, "var(--sky)")}
+      </section>
+      <div class="pg-charts">
+        <section class="panel">
+          <h2 class="pg-h">Plan vs you</h2>
+          <p class="muted small">Dashed line: where the Road to August expects you. Solid line: what you've actually finished.</p>
+          ${planChart()}
+        </section>
+        <section class="panel">
+          <h2 class="pg-h">Last 30 days</h2>
+          <p class="muted small">${xb.total.toLocaleString()} XP over ${plural(xb.active, "active day")} · best streak ${S.bestStreak()} days · quiz accuracy ${qs.length ? Math.round((qRight / qs.length) * 100) + "%" : "–"}</p>
+          ${xb.total ? xb.svg : `<div class="chart-empty">Your first XP bar appears the moment you answer a quiz or finish a node.</div>`}
+        </section>
+      </div>
+      <section class="panel">
+        <h2 class="pg-h">Every day you showed up</h2>
+        <p class="muted small">Last 26 weeks. Darker squares mean more XP that day.</p>
+        <div class="heat heat-wide" aria-label="Activity over the last 26 weeks">${heatmap(26)}</div>
+      </section>
+      ${weak.length ? `<section class="panel"><h2 class="pg-h">Revise these next</h2><p class="muted small">Your lowest quiz accuracy so far.</p><div class="weak-row">${weak.map((x) => `<a class="weak" href="#/library/${x.a.id}"><b>${esc(x.a.title)}</b><span>${Math.round((x.r / x.n) * 100)}% right · ${x.n} answers</span></a>`).join("")}</div></section>` : ""}
+      <div class="pg-filter" role="radiogroup" aria-label="Show">
+        ${[["all", "Everything"], ["todo", "Not done yet"], ["done", "Done"]].map(([k, t]) => `<button type="button" class="chip ${pgFilter === k ? "on" : ""}" role="radio" aria-checked="${pgFilter === k}" data-act="pg-filter" data-f="${k}">${t}</button>`).join("")}
+      </div>
+      <div class="pg-cols">
+        <section><h2 class="pg-h">Path nodes</h2>${pathHtml}</section>
+        <section><h2 class="pg-h">Library</h2>${libHtml}</section>
+        <section><h2 class="pg-h">Capstones</h2>${capHtml}<h2 class="pg-h" style="margin-top:24px">Mind</h2>${mindHtml}</section>
+      </div>`;
+    requestAnimationFrame(() => $main.querySelectorAll(".ring-fg").forEach((c) => c.classList.add("go")));
+  }
+
+  // ---------- views: tutor ----------
+  let tutorStop = null;
+  function tutorProfile() {
+    const st = S.get(), lv = S.level(), nl = nextLesson("build");
+    const read = LIB.filter((l) => st.read[l.id]).length;
+    const recent = LIB.filter((l) => st.read[l.id]).sort((a, b) => (st.read[b.id] > st.read[a.id] ? 1 : -1)).slice(0, 5).map((l) => l.t);
+    return `level ${lv.name} (${lv.xp} XP), ${Object.keys(st.done).filter((id) => byId[id]).length}/${LESSONS.length} build nodes done, current node: ${nl ? nl.title : "all done"}, ${read}/${LIB.length} library lessons read${recent.length ? " (recently: " + recent.join("; ") + ")" : ""}, ${S.totalProblems()} DSA problems solved in ProntoPy, ${S.streak()}-day streak.`;
+  }
+  function viewTutor(kind, id) {
+    let context = null;
+    if (kind === "read" && libById[id]) { const l = libById[id]; context = { title: l.t, text: strip(l.body.join("\n")) + "\nKey ideas: " + strip((l.keys || []).join("; ")) + "\nExample: " + strip(l.ex || "") }; }
+    if (kind === "node" && byId[id]) { const l = byId[id]; context = { title: l.title, text: strip([l.sub, SIMPLE[l.id] || "", (l.concept || []).join("\n"), "Objectives: " + (l.objectives || []).join("; "), l.build ? "Build task: " + l.build.title + ". " + (l.build.brief || "") + " Steps: " + (l.build.steps || []).join(" | ") : ""].join("\n")).slice(0, 6000) }; }
+    if (!window.PnodeTutor) { $main.innerHTML = `<p>Tutor failed to load.</p>`; return; }
+    tutorStop = window.PnodeTutor.mount($main, { context, profile: tutorProfile(), toast, prefill: kind === "node" ? "I'm stuck on this build. Give me one hint, not the answer: " : "" });
+  }
+
   // ---------- quiz answering (feed + reader) ----------
   function answer(el, qid, q, from) {
     const wrap = el.closest(".fc-quiz");
@@ -926,6 +1169,7 @@
     const parts = location.hash.replace(/^#\//, "").split("/");
     const id = parts[1];
 
+    if (act === "pg-filter") { pgFilter = el.dataset.f; rerenderProgress(); return; }
     if (act === "start-session") { S.startSession(el.dataset.kind || currentRoutine()); renderSession(); route(); toast("Block started. Phone face down."); }
     if (act === "end-session") { S.endSession(); renderSession(); route(); }
     if (act === "hint") { S.revealHint(id); viewLesson(id); const hs = $main.querySelectorAll(".hint"); hs[hs.length - 1]?.scrollIntoView({ block: "center", behavior: "smooth" }); }
@@ -1020,6 +1264,21 @@
       const box = $main.querySelector(".complete-box .muted");
       if (box) box.textContent = `${(S.get().checks[id] || []).length} of ${byId[id].checks.length} checks ticked. Be honest. Interviews will be.`;
     }
+    if (el.dataset.act === "pg-node") {
+      const nid = el.dataset.id;
+      if (el.checked) { const g = S.completeLesson(nid); if (g) toast(`${byId[nid].title} built · +${g} XP`); } else S.uncompleteLesson(nid);
+      renderHud(); rerenderProgress(); return;
+    }
+    if (el.dataset.act === "pg-read") {
+      const lid = el.dataset.id;
+      if (el.checked) { if (S.markRead(lid)) toast(`Read · +${S.XP.read} XP`); } else S.unmarkRead(lid);
+      renderHud(); rerenderProgress(); return;
+    }
+    if (el.dataset.act === "pg-ms") {
+      const on = S.toggleMilestone(el.dataset.cap, +el.dataset.i);
+      if (on) toast(`Milestone shipped · +${S.XP.milestone} XP`);
+      renderHud(); rerenderProgress(); return;
+    }
     if (el.dataset.act === "milestone") {
       const before = S.level().index;
       const on = S.toggleMilestone(id, +el.dataset.i);
@@ -1040,13 +1299,15 @@
   // ---------- router ----------
   function route() {
     destroyViz();
+    if (heroStop) { heroStop(); heroStop = null; }
+    if (tutorStop) { tutorStop(); tutorStop = null; }
     if (feedObserver) { feedObserver.disconnect(); feedObserver = null; }
     document.body.classList.remove("feed-mode");
     const parts = location.hash.replace(/^#\/?/, "").split("/");
     const view = parts[0] || "today";
     const navKey = { lesson: "map", drill: "library", mind: "library", capstone: "map", capstones: "map", plan: "today", read: "library" }[view] || view;
     document.querySelectorAll("[data-nav]").forEach((a) => { if (a.dataset.nav === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    const titles = { today: "Today", feed: "Feed", map: "Path", library: "Library", lab: "Lab", plan: "Road to August", mind: "Mind", capstones: "Capstones", me: "Me" };
+    const titles = { progress: "Progress", tutor: "Tutor", today: "Today", feed: "Feed", map: "Path", library: "Library", lab: "Lab", plan: "Road to August", mind: "Mind", capstones: "Capstones", me: "Me" };
     switch (view) {
       case "today": viewToday(); break;
       case "feed": viewFeed(); break;
@@ -1061,6 +1322,8 @@
       case "capstones": viewCapstones(); break;
       case "capstone": viewCapstone(parts[1]); break;
       case "me": viewMe(); break;
+      case "progress": viewProgress(); break;
+      case "tutor": viewTutor(parts[1], parts[2]); break;
       default: viewNotFound();
     }
     const t = view === "lesson" && byId[parts[1]] ? byId[parts[1]].title
@@ -1078,4 +1341,14 @@
   applyTheme();
   renderSession();
   route();
+
+  // splash: hold the intro briefly on the first open of a session, then fade it out
+  (function () {
+    const sp = document.getElementById("splash");
+    if (!sp) return;
+    if (document.documentElement.classList.contains("no-splash")) { sp.remove(); return; }
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const wait = Math.max(0, (reduce ? 400 : 1700) - performance.now());
+    setTimeout(() => { sp.classList.add("out"); setTimeout(() => sp.remove(), 700); }, wait);
+  })();
 })();

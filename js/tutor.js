@@ -135,6 +135,7 @@
               <li>Windows: Settings → search "environment variables" → New user variable → name <code>OLLAMA_ORIGINS</code>, value <code>${esc(origin)}</code>. Quit Ollama from the tray and open it again.</li>
               <li>Linux: <code>sudo systemctl edit ollama</code>, add <code>[Service]</code> and <code>Environment="OLLAMA_ORIGINS=${esc(origin)}"</code>, then <code>sudo systemctl restart ollama</code>.</li>
             </ul></li>
+          <li>If the browser asks whether Pnode may access apps or devices on your local network, choose <b>Allow</b>. That's how the page reaches Ollama on your own laptop.</li>
           <li>Come back here and press <button type="button" class="btn" data-retry>Check again</button></li>
         </ol>
         <p class="small muted">Model names change often; browse <a href="https://ollama.com/library" target="_blank" rel="noopener">ollama.com/library</a> for newer coding models that fit your RAM.</p>`;

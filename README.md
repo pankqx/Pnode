@@ -12,6 +12,9 @@ A build-it-yourself path from web basics to senior full-stack engineer, in TypeS
   - Engineering and AI: AI concepts for builders, DevOps and cloud.
   - Life skills: learning how to learn, communication and English, character and EI, critical thinking, power and influence, career and job hunt.
   - World and money: reading the news and economics, money and trading (educational only), style on a budget.
+- **Progress**: completion rings, a plan-vs-you line chart, 30-day XP bars, a 26-week activity heatmap, your weakest quiz areas, and tickable checklists for every node, lesson, milestone and drill.
+- **Tutor**: an offline AI tutor (default name Nova) that runs on your own laptop through [Ollama](https://ollama.com). Modes: teach, explain code, write code, hints only, quiz, mock interview. It can see the lesson you came from and your progress. Setup steps are on the Tutor page.
+- **Go deeper**: each Library area lists free courses, books, docs and YouTube links, plus a "Beyond Pnode" list (NPTEL, OSSU, MIT OCW) for university-level depth.
 - **Every node** has: an "In plain words" analogy, the idea, interactive explainers, a build brief you code yourself, acceptance checks, progressive hints, free resources, interview questions and notes.
 - **Lab**: every interactive explainer in one place (event loop, React re-renders, JWT flow, SQL joins, race conditions, consistent hashing, CPU scheduling, Docker layers, Kubernetes reconcile and many more).
 - **Mind**: written drills for problem solving, critical thinking and emotional intelligence.
@@ -27,7 +30,9 @@ No build step and no dependencies. Either:
 
 - open `index.html` directly in a browser (works offline, apart from web fonts), or
 - serve the folder: `python3 -m http.server 8000`, then visit http://localhost:8000, or
-- enable GitHub Pages: repo **Settings → Pages → Deploy from a branch → main / (root)**.
+- enable GitHub Pages: repo **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: main, folder: / (root) → Save**. After a minute it's live at https://pankqx.github.io/Pnode/.
+
+For the Tutor on GitHub Pages, set the environment variable `OLLAMA_ORIGINS=https://pankqx.github.io` (or `*` if you also open the file locally) and restart Ollama.
 
 ## Structure
 
@@ -35,6 +40,8 @@ No build step and no dependencies. Either:
 index.html
 css/styles.css
 js/store.js            progress, XP, levels, streaks, problem tally
+js/tutor.js            offline Ollama tutor (chat, streaming, modes)
+js/data/refs.js        study references per Library area
 js/app.js              router and views (Today, Feed, Path, Library, Lab, Plan, Mind, Capstones, Me)
 js/data/phase-*.js     build path, one file per phase
 js/data/extra-nodes.js extra build nodes inserted into phases

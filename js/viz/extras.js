@@ -214,7 +214,7 @@
     id: "pattern-quiz",
     title: "Name that pattern",
     blurb: "Read the problem, pick the pattern before you code",
-    nodes: ["dsa-patterns", "dsa-big-o"],
+    nodes: ["dsa-patterns"],
     mount(root) {
       const Q = [
         ["Given a sorted array, find two numbers that add up to a target, using O(1) extra space.", "Two pointers", "Sorted + pair + O(1) space is the classic two-pointer signal."],

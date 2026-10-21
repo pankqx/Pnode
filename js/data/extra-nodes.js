@@ -183,23 +183,23 @@
     ],
   });
 
-  // The DSA track now teaches the patterns, so the career node focuses on interview conditions.
+  // DSA patterns are taught in ProntoPy, so this career node focuses on interview conditions.
   const career = D.phases.find((p) => p.id === "career");
   const dsaNode = career && career.lessons.find((l) => l.id === "dsa-patterns");
   if (dsaNode) {
     dsaNode.title = "DSA under interview conditions";
     dsaNode.sub = "Timed online assessments, mock rounds and communicating while you code";
     dsaNode.concept = [
-      `By now the DSA track has taught you the patterns. This node is about performing under pressure: online assessments with a timer, live rounds where you think out loud, and recovering when you're stuck.`,
+      `By now ProntoPy has taught you the patterns. This node is about performing under pressure: online assessments with a timer, live rounds where you think out loud, and recovering when you're stuck.`,
       `Interviewers grade communication as much as correctness: clarifying questions, a stated brute force, the optimisation idea before code, clean code, and testing your own solution with edge cases.`,
       `Practice in realistic conditions every week: a timer, no autocomplete, and someone (or a recording) listening. Review every mock and add your repeated mistakes to a list you read before each interview.`,
     ];
     dsaNode.build = {
       title: "Mock interview season",
       brief: `Run a structured mock schedule for the final months before applying.`,
-      steps: [`Weekly: one timed online assessment set (2 problems, 70 minutes) on LeetCode or a similar site.`, `Weekly: one live mock with a friend or a free peer platform, speaking the whole time.`, `Re-solve every problem you got wrong after 3 days and after 2 weeks.`, `Keep a "mistakes I repeat" list and read it before each mock.`, `Target: 150+ problems logged across the DSA track by July.`],
+      steps: [`Weekly: one timed online assessment set (2 problems, 70 minutes) on LeetCode or a similar site.`, `Weekly: one live mock with a friend or a free peer platform, speaking the whole time.`, `Re-solve every problem you got wrong after 3 days and after 2 weeks.`, `Keep a "mistakes I repeat" list and read it before each mock.`, `Target: 300 ProntoPy problems logged by July.`],
     };
-    dsaNode.checks = [`8 timed assessments done, with scores and times logged`, `6 live mocks done, each with written feedback`, `"Mistakes I repeat" list kept and read before every mock`, `150+ problems logged across the DSA track`];
+    dsaNode.checks = [`8 timed assessments done, with scores and times logged`, `6 live mocks done, each with written feedback`, `"Mistakes I repeat" list kept and read before every mock`, `300 ProntoPy problems logged with the daily check-in`];
     dsaNode.hints = [`If you're stuck for 5 minutes, say the brute force out loud and code it. A working O(n²) beats a blank screen.`, `Before coding, state the complexity you're aiming for and why.`, `When you finish, trace one normal case and one edge case out loud before saying you're done.`];
   }
 })();

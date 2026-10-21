@@ -1,5 +1,5 @@
 /* Pnode progress store. Everything lives in this browser's localStorage.
-   Use Me → Export to back it up or move it to another device. */
+   Use Me → Copy backup to save it or move it to another device. */
 (function () {
   const KEY = "pnode:v1";
 
@@ -10,7 +10,10 @@
     interview: 5,     // each interview question reviewed
     drill: 25,        // each Mind drill written up
     milestone: 250,   // each capstone milestone
-    problem: 5,       // each DSA problem logged
+    problem: 5,       // each ProntoPy / DSA problem logged
+    read: 20,         // each Library lesson read
+    quiz: 5,          // each quiz question answered correctly (first try)
+    quest: 15,        // each daily quest completed
   };
 
   const LEVELS = [
@@ -40,7 +43,15 @@
       session: null, // { start: ms }
       theme: null,
       hours: 2,      // daily session length: 1 or 2
-      problems: {},  // lessonId -> problems solved for that pattern
+      problems: {},  // legacy: lessonId -> DSA problems solved
+      pronto: {},    // YYYY-MM-DD -> ProntoPy problems logged that day
+      prontoUrl: "",
+      read: {},      // library lessonId -> date read
+      quiz: {},      // questionId -> true (right first try) / false
+      day: {},       // YYYY-MM-DD -> { cards, lessons, right, answered }
+      habits: [{ id: "gym", name: "Gym" }, { id: "noig", name: "No Instagram" }, { id: "sleep", name: "7h sleep" }],
+      habitLog: {},  // YYYY-MM-DD -> [habitId]
+      quests: {},    // YYYY-MM-DD -> [questId] completed
     };
   }
 
@@ -135,7 +146,7 @@
     },
     setCapNote(capId, text) { state.capNotes[capId] = text; save(); },
 
-    startSession() { state.session = { start: Date.now() }; save(); },
+    startSession(kind) { state.session = { start: Date.now(), kind: kind || null }; save(); },
     endSession() { state.session = null; save(); },
 
     setTheme(t) { state.theme = t; save(); },
@@ -149,7 +160,58 @@
       save();
       return next;
     },
-    totalProblems() { return Object.values(state.problems).reduce((a, b) => a + b, 0); },
+    totalProblems() { return Object.values(state.problems).reduce((a, b) => a + b, 0) + Object.values(state.pronto).reduce((a, b) => a + b, 0); },
+    prontoToday() { return state.pronto[today()] || 0; },
+    addPronto(delta) {
+      const t = today(), cur = state.pronto[t] || 0, next = Math.max(0, cur + delta);
+      if (next === cur) return cur;
+      state.pronto[t] = next; if (!next) delete state.pronto[t];
+      logXp((next - cur) * XP.problem); save(); return next;
+    },
+    setProntoUrl(u) { state.prontoUrl = u; save(); },
+
+    // ---- daily stats used by quests and the feed
+    dayStat(key, n) {
+      const t = today(), d = state.day[t] || (state.day[t] = { cards: 0, lessons: 0, right: 0, answered: 0 });
+      d[key] = (d[key] || 0) + (n || 1); save(); return d[key];
+    },
+    todayStats() { return Object.assign({ cards: 0, lessons: 0, right: 0, answered: 0 }, state.day[today()] || {}); },
+
+    // ---- library
+    markRead(id) {
+      if (state.read[id]) return false;
+      state.read[id] = today(); logXp(XP.read); api.dayStat("lessons"); save(); return true;
+    },
+    unmarkRead(id) { if (!state.read[id]) return; delete state.read[id]; logXp(-XP.read); save(); },
+    answerQuiz(qid, correct) {
+      if (qid in state.quiz) return null; // only the first answer counts
+      state.quiz[qid] = !!correct;
+      api.dayStat("answered");
+      if (correct) { api.dayStat("right"); logXp(XP.quiz); }
+      save(); return correct;
+    },
+
+    // ---- habits
+    toggleHabit(id) {
+      const t = today(), arr = state.habitLog[t] || (state.habitLog[t] = []);
+      const i = arr.indexOf(id); if (i === -1) arr.push(id); else arr.splice(i, 1);
+      save(); return i === -1;
+    },
+    habitStreak(id) {
+      let n = 0; const d = new Date();
+      if (!(state.habitLog[today(d)] || []).includes(id)) d.setDate(d.getDate() - 1);
+      while ((state.habitLog[today(d)] || []).includes(id)) { n++; d.setDate(d.getDate() - 1); }
+      return n;
+    },
+    addHabit(name) { const id = "h" + Date.now().toString(36); state.habits.push({ id, name: String(name).slice(0, 40) }); save(); return id; },
+    removeHabit(id) { state.habits = state.habits.filter((h) => h.id !== id); save(); },
+
+    // ---- quests
+    questDone(id) { return (state.quests[today()] || []).includes(id); },
+    completeQuest(id) {
+      const t = today(), arr = state.quests[t] || (state.quests[t] = []);
+      if (arr.includes(id)) return false; arr.push(id); logXp(XP.quest); save(); return true;
+    },
 
     totalXp() {
       let xp = 0;
@@ -159,6 +221,10 @@
       xp += Object.keys(state.mind).length * XP.drill;
       for (const id in state.cap) xp += state.cap[id].length * XP.milestone;
       for (const id in state.problems) xp += state.problems[id] * XP.problem;
+      for (const d in state.pronto) xp += state.pronto[d] * XP.problem;
+      xp += Object.keys(state.read).length * XP.read;
+      xp += Object.values(state.quiz).filter(Boolean).length * XP.quiz;
+      for (const d in state.quests) xp += state.quests[d].length * XP.quest;
       return xp;
     },
     level(xp) {

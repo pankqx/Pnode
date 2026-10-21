@@ -93,7 +93,7 @@ window.PNODE.phases.push({
       build: {
         title: "Page replacement simulator",
         brief: `Write a simulator that takes a reference string and frame count and reports faults for FIFO, LRU and Optimal, step by step.`,
-        steps: [`Print a table showing frame contents at each step with faults marked.`, `Find and demonstrate Belady's anomaly with FIFO.`, `Reuse your LRU cache from the DSA track as the LRU policy.`, `Add a note mapping this to Redis's maxmemory-policy options.`],
+        steps: [`Print a table showing frame contents at each step with faults marked.`, `Find and demonstrate Belady's anomaly with FIFO.`, `Reuse the LRU cache you built in ProntoPy (rewrite it in TypeScript) as the LRU policy.`, `Add a note mapping this to Redis's maxmemory-policy options.`],
       },
       checks: [`All three policies match hand-worked examples`, `Belady's anomaly demonstrated with a specific reference string`, `Redis connection explained`],
       hints: [`Belady's classic example: 1,2,3,4,1,2,5,1,2,3,4,5 with 3 versus 4 frames under FIFO.`, `Optimal: evict the page whose next use is furthest away (or never).`, `Redis offers allkeys-lru, allkeys-lfu, volatile-ttl and more.`],

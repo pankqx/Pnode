@@ -568,8 +568,9 @@ textarea:focus, input[type="text"]:focus { outline: 2px solid var(--lit); outlin
 .area-card { position: relative; overflow: hidden; display: grid; gap: 6px; align-content: start; padding: var(--s-4) var(--s-5); border-radius: var(--r-md); border: 1px solid var(--line); background: var(--bg-raised); color: var(--ink); text-decoration: none; min-height: 168px; }
 .area-card:hover { border-color: var(--lit); }
 .area-card:hover .area-glyph { transform: rotate(-8deg) scale(1.08); }
-.area-glyph { position: absolute; right: 12px; top: 6px; font-family: var(--f-display); font-size: 3.2rem; font-weight: 800; color: var(--lit); opacity: .22; transition: transform 300ms cubic-bezier(.2,.8,.2,1); line-height: 1; }
-.area-card b { font-family: var(--f-display); font-size: 1.15rem; padding-right: 40px; }
+.area-glyph { position: absolute; right: 12px; bottom: 14px; z-index: 0; pointer-events: none; font-family: var(--f-display); font-size: 3.2rem; font-weight: 800; color: var(--lit); opacity: .14; transition: transform 300ms cubic-bezier(.2,.8,.2,1); line-height: 1; }
+.area-card > :not(.area-glyph) { position: relative; z-index: 1; }
+.area-card b { font-family: var(--f-display); font-size: 1.15rem; }
 .area-blurb { color: var(--ink-2); font-size: .9rem; line-height: 1.45; }
 .area-meta { color: var(--ink-3); font-size: .8rem; margin-top: auto; }
 .area-card .meter { margin: 4px 0 0; height: 6px; }

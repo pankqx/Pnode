@@ -829,3 +829,22 @@ a.hud:hover { background: var(--bg-raised); }
 }
 .tt-actions [hidden], .btn[hidden] { display: none !important; }
 .chart-empty { display: grid; place-items: center; min-height: 140px; color: var(--ink-2); font-size: .9rem; border: 1px dashed var(--line-strong); border-radius: var(--r-md); margin-top: 10px; }
+
+/* ===== Degree-depth lessons ===== */
+.deep-sec h2 { display: flex; align-items: center; gap: 8px; }
+.deep-sec h2 svg { width: 20px; height: 20px; }
+.wp { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg-raised); padding: 14px 16px; margin-bottom: 12px; }
+.wp-q { margin: 0 0 8px; }
+.wp details summary, .pq summary { cursor: pointer; color: var(--lit); font-weight: 700; }
+.wp-steps { margin: 10px 0 6px; padding-left: 22px; }
+.wp-steps li { margin-bottom: 6px; }
+.wp-a { margin: 6px 0 0; padding: 8px 12px; border-radius: var(--r-sm); background: color-mix(in srgb, var(--mint) 12%, var(--bg-sunk)); }
+.pq { border-bottom: 1px solid var(--line); padding: 10px 0; }
+.pq summary { color: var(--ink); font-weight: 400; list-style: none; display: grid; grid-template-columns: auto 1fr; gap: 10px; }
+.pq summary::-webkit-details-marker { display: none; }
+.pq-n { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--bg-sunk); font-size: .8rem; font-weight: 700; color: var(--lit); }
+.pq-a { margin: 8px 0 0 34px; padding: 10px 12px; border-left: 3px solid var(--mint); background: var(--bg-raised); border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+.project-box { border: 1px dashed var(--lit); border-radius: var(--r-md); padding: 16px 18px; background: color-mix(in srgb, var(--lit) 6%, var(--bg-raised)); }
+.reader pre, .wp pre, .pq-a pre { overflow-x: auto; background: var(--bg-sunk); padding: 10px; border-radius: var(--r-sm); font-size: .85rem; }
+.reader table { border-collapse: collapse; margin: 10px 0; font-size: .9rem; display: block; overflow-x: auto; }
+.reader th, .reader td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; }

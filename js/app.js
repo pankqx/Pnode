@@ -26,7 +26,7 @@
   const trackLessons = (t) => LESSONS.filter((l) => l.phase.track === t);
 
   // ---------- library data ----------
-  const GROUPS = ["Computer science", "Engineering and AI", "Life skills", "World and money"];
+  const GROUPS = ["Degree depth", "Computer science", "Engineering and AI", "Life skills", "World and money"];
   const AREAS = (D.library || []).slice().sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || (a.order || 0) - (b.order || 0));
   const LIB = [];
   AREAS.forEach((a) => a.modules.forEach((m) => m.lessons.forEach((l) => { l.area = a; l.module = m; LIB.push(l); })));
@@ -703,6 +703,14 @@
           ${l.fact ? `<div class="rbox fact"><b>${I.star} Did you know?</b><p>${l.fact}</p></div>` : ""}
         </div>
         ${vizzes.length ? `<section class="section viz-section" style="max-width:none"><h2>${I.eye} See it</h2><div class="viz-list">${vizzes.map((v) => vizFigure(v)).join("")}</div></section>` : ""}
+        ${(l.wp || []).length ? `<section class="section deep-sec" aria-labelledby="s-wp"><h2 id="s-wp">${I.pen} Worked problems</h2><p class="muted small">Try each one on paper first. Then open the solution and compare every step.</p>
+          ${l.wp.map((w, k) => `<div class="wp"><p class="wp-q"><b>Problem ${k + 1}.</b> ${w.q}</p><details><summary>Show the solution</summary><ol class="wp-steps">${w.s.map((x) => `<li>${x}</li>`).join("")}</ol><p class="wp-a"><b>Answer:</b> ${w.a}</p></details></div>`).join("")}
+        </section>` : ""}
+        ${(l.pq || []).length ? `<section class="section deep-sec" aria-labelledby="s-pq"><h2 id="s-pq">${I.target} Practice questions</h2><p class="muted small">Answer out loud or in your notebook, then check.</p>
+          ${l.pq.map((q, k) => `<details class="pq"><summary><span class="pq-n">${k + 1}</span>${q.q}</summary><div class="pq-a">${q.a}</div></details>`).join("")}
+        </section>` : ""}
+        ${l.project ? `<section class="section deep-sec project-box" aria-labelledby="s-proj"><h2 id="s-proj">${I.hammer} Mini project: ${esc(l.project.t)}</h2><p>${l.project.brief}</p><ol>${l.project.steps.map((x) => `<li>${x}</li>`).join("")}</ol>${(l.project.stretch || []).length ? `<p class="small"><b>Stretch goals:</b> ${l.project.stretch.join(" · ")}</p>` : ""}</section>` : ""}
+        ${l.wp || l.pq ? `<section class="section"><a class="btn" href="#/tutor/more/${l.id}">${I.chat.replace("<svg", '<svg width="18" height="18"')} ${esc(tutorName())}, give me more problems like these</a></section>` : ""}
         ${quiz.length ? `<section class="section" aria-labelledby="s-quiz"><h2 id="s-quiz">${I.target} Quick check</h2>
           ${quiz.map((q, k) => {
             const qid = `${l.id}#${k}`, ans = st.quiz[qid];
@@ -1139,10 +1147,10 @@
   }
   function viewTutor(kind, id) {
     let context = null;
-    if (kind === "read" && libById[id]) { const l = libById[id]; context = { title: l.t, text: strip(l.body.join("\n")) + "\nKey ideas: " + strip((l.keys || []).join("; ")) + "\nExample: " + strip(l.ex || "") }; }
+    if ((kind === "read" || kind === "more") && libById[id]) { const l = libById[id]; context = { title: l.t, text: strip(l.body.join("\n")) + "\nKey ideas: " + strip((l.keys || []).join("; ")) + "\nExample: " + strip(l.ex || "") }; }
     if (kind === "node" && byId[id]) { const l = byId[id]; context = { title: l.title, text: strip([l.sub, SIMPLE[l.id] || "", (l.concept || []).join("\n"), "Objectives: " + (l.objectives || []).join("; "), l.build ? "Build task: " + l.build.title + ". " + (l.build.brief || "") + " Steps: " + (l.build.steps || []).join(" | ") : ""].join("\n")).slice(0, 6000) }; }
     if (!window.PnodeTutor) { $main.innerHTML = `<p>Tutor failed to load.</p>`; return; }
-    tutorStop = window.PnodeTutor.mount($main, { context, profile: tutorProfile(), toast, prefill: kind === "node" ? "I'm stuck on this build. Give me one hint, not the answer: " : "" });
+    tutorStop = window.PnodeTutor.mount($main, { context, profile: tutorProfile(), toast, prefill: kind === "node" ? "I'm stuck on this build. Give me one hint, not the answer: " : kind === "more" ? "Give me one new GATE-style problem on this lesson. Wait for my answer, then check it step by step and give the next one." : "" });
   }
 
   // ---------- quiz answering (feed + reader) ----------

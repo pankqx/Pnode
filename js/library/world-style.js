@@ -1,0 +1,102 @@
+LIB_ADD({
+  id: "style", title: "Style on a budget", group: "World and money", order: 3, glyph: "FIT",
+  blurb: "Fit, colour, a capsule wardrobe, grooming and dressing for interviews — looking sharp without spending much.",
+  intro: "Style isn't about expensive brands. It's fit, colour, care and confidence. A few well-chosen, well-fitting basics look better than a pile of trendy clothes.",
+  modules: [
+    { title: "Foundations", lessons: [
+      { id: "st-fit", t: "Fit is everything", mins: 4,
+        body: [
+          "A cheap shirt that fits beats an expensive one that doesn't. Check shoulders first: the seam should sit at your shoulder bone.",
+          "Trousers should sit at your waist without a belt doing all the work, with little or no bunching at the shoe.",
+          "Local tailors are a style superpower: taking in a shirt or shortening trousers often costs very little and transforms the fit.",
+        ],
+        keys: ["Fit beats brand.", "Shoulder seam on the shoulder bone.", "A tailor makes cheap clothes look expensive."],
+        ex: "A ₹600 shirt tailored for ₹150 can look better than a ₹3,000 shirt off the rack.",
+        fact: "Shoulders are the hardest part of a jacket or shirt to alter, so get them right when buying.",
+        quiz: [
+          { q: "First thing to check on a shirt's fit?", o: ["Colour", "Shoulder seams", "Brand", "Buttons"], a: 1, why: "Shoulders are hard to alter." },
+          { q: "Cheapest big upgrade to your clothes?", o: ["Designer labels", "Tailoring", "More clothes", "Logos"], a: 1, why: "Fit transforms appearance." },
+        ] },
+      { id: "st-colour", t: "Colours that always work", mins: 4,
+        body: [
+          "Start with neutrals: navy, white, grey, black, olive, beige. They all match each other, so every piece goes with every other.",
+          "Add one or two accent colours that suit your skin tone. Many Indian skin tones look great in navy, white, olive, maroon and earthy tones.",
+          "Rule of thumb: maximum one bold item per outfit.",
+        ],
+        keys: ["Neutrals all match.", "One or two accent colours.", "One bold item at a time."],
+        ex: "Navy shirt + beige chinos + white sneakers: simple, clean and works almost anywhere.",
+        fact: "Navy is one of the most versatile clothing colours because it pairs with almost every other neutral.",
+        quiz: [
+          { q: "Why start with neutrals?", o: ["They're cheap", "They combine with everything", "Trendy", "Required"], a: 1, why: "More outfits from fewer clothes." },
+          { q: "How many bold items per outfit?", o: ["As many as possible", "About one", "None ever", "Three"], a: 1, why: "One focal point looks intentional." },
+        ] },
+      { id: "st-capsule", t: "Building a capsule wardrobe", mins: 5,
+        body: [
+          "A <b>capsule wardrobe</b> is a small set of versatile pieces that mix and match. Fewer decisions, more outfits.",
+          "Starter capsule: 2 white/light T-shirts, 1 navy and 1 black T-shirt, 2 shirts (white, light blue), 1 dark jeans, 1 chinos, 1 formal trouser, white sneakers, one pair of formal shoes, one jacket or overshirt.",
+          "Buy slowly, one piece at a time, during sales. Quality basics over trendy pieces.",
+        ],
+        keys: ["Small set, many combinations.", "Neutral basics first.", "Buy slowly, in sales."],
+        ex: "With 4 tops and 3 bottoms that all match, you have 12 outfits.",
+        fact: "Steve Jobs famously wore a near-identical outfit daily to reduce decisions — an extreme capsule.",
+        quiz: [
+          { q: "4 tops and 3 bottoms that all match give how many outfits?", o: ["7", "12", "4", "3"], a: 1, why: "4 × 3 = 12." },
+          { q: "Capsule wardrobe priority?", o: ["Trendy items", "Versatile basics", "Logos", "Bright prints"], a: 1, why: "Basics combine endlessly." },
+        ] },
+    ] },
+    { title: "Looking sharp", lessons: [
+      { id: "st-groom", t: "Grooming basics", mins: 4,
+        body: [
+          "Grooming matters more than clothes: clean, trimmed hair; a kept beard or clean shave; clean nails; fresh breath.",
+          "Simple skin routine: gentle face wash, moisturiser and sunscreen during the day.",
+          "Find a barber who listens, and get regular trims so the shape stays sharp.",
+        ],
+        keys: ["Grooming beats clothing.", "Wash, moisturise, sunscreen.", "Regular trims keep shape."],
+        ex: "A well-groomed person in a plain T-shirt looks sharper than an ungroomed person in a branded shirt.",
+        fact: "Sunscreen is recommended by dermatologists as one of the most effective ways to protect skin from sun damage.",
+        quiz: [
+          { q: "Which has the biggest impact on appearance?", o: ["Brand logos", "Grooming", "Expensive watch", "Phone"], a: 1, why: "It's noticed first." },
+          { q: "Basic daytime skin step often skipped?", o: ["Perfume", "Sunscreen", "Hair gel", "Cologne"], a: 1, why: "It protects skin." },
+        ] },
+      { id: "st-shoes", t: "Shoes and care", mins: 4,
+        body: [
+          "People notice shoes. Clean white sneakers and one pair of polished formal shoes cover almost everything.",
+          "Care makes cheap items last: wash sneakers, polish leather, store clothes folded or hung, and fix loose buttons.",
+          "Wash dark clothes inside out in cold water to keep colour longer.",
+        ],
+        keys: ["Clean shoes matter.", "Care extends life.", "Cold wash, inside out."],
+        ex: "Wiping white sneakers for two minutes a week keeps them looking new for months.",
+        fact: "Washing clothes in cold water also saves electricity and reduces fading.",
+        quiz: [
+          { q: "Most versatile shoe pair for casual wear?", o: ["Neon running shoes", "Clean white sneakers", "Flip-flops", "Boots"], a: 1, why: "They match most outfits." },
+          { q: "How to keep dark clothes from fading?", o: ["Hot wash", "Cold wash, inside out", "Bleach", "Dry in strong sun"], a: 1, why: "Less fading and wear." },
+        ] },
+      { id: "st-interview", t: "Dressing for interviews and work", mins: 4,
+        body: [
+          "For tech interviews, smart casual usually works: a well-fitting shirt or polo, chinos or dark jeans, clean shoes. For banks or consulting, go more formal.",
+          "For video interviews: plain solid colours, good light on your face, camera at eye level and a tidy background.",
+          "When unsure, dress one level above the company's daily style.",
+        ],
+        keys: ["Smart casual for most tech roles.", "Video: solid colour, light, eye-level camera.", "One level above daily style."],
+        ex: "A light blue shirt, navy chinos and clean shoes work for most tech interviews in India.",
+        fact: "Busy patterns like thin stripes can flicker on camera (the moiré effect), so solid colours are safer on video.",
+        quiz: [
+          { q: "Safest choice for a video interview?", o: ["Thin stripes", "Solid colours", "Big logos", "Neon"], a: 1, why: "They look clean on camera." },
+          { q: "Unsure of the dress code? Dress…", o: ["As casual as possible", "One level above their daily style", "In a tuxedo", "In gym wear"], a: 1, why: "Respectful without overdoing it." },
+        ] },
+      { id: "st-confidence", t: "Posture and presence", mins: 4,
+        body: [
+          "Posture is free style: stand tall, shoulders relaxed, chin level. Your gym work helps here.",
+          "Eye contact, a calm voice and a real smile make a strong impression.",
+          "Confidence comes from preparation: when you know your stuff, it shows in how you carry yourself.",
+        ],
+        keys: ["Good posture costs nothing.", "Eye contact and calm voice.", "Preparation builds confidence."],
+        ex: "Walking into an interview after 100 hours of practice feels — and looks — very different from walking in unprepared.",
+        fact: "Strength training, especially for the upper back, can support better posture.",
+        quiz: [
+          { q: "Free way to look more confident?", o: ["Buy a watch", "Improve posture", "Talk faster", "Avoid eye contact"], a: 1, why: "Posture changes how you're seen." },
+          { q: "Real confidence mostly comes from…", o: ["Clothes", "Preparation", "Luck", "Loud voice"], a: 1, why: "Knowing your material shows." },
+        ] },
+    ] },
+  ],
+});

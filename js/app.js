@@ -26,7 +26,7 @@
   const trackLessons = (t) => LESSONS.filter((l) => l.phase.track === t);
 
   // ---------- library data ----------
-  const GROUPS = ["Degree depth", "Computer science", "Engineering and AI", "Life skills", "World and money"];
+  const GROUPS = ["Web degree depth", "Degree depth", "Computer science", "Engineering and AI", "Life skills", "World and money"];
   const AREAS = (D.library || []).slice().sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || (a.order || 0) - (b.order || 0));
   const LIB = [];
   AREAS.forEach((a) => a.modules.forEach((m) => m.lessons.forEach((l) => { l.area = a; l.module = m; LIB.push(l); })));
@@ -632,7 +632,7 @@
     $main.innerHTML = `
       <div class="page-head">
         <h1>Library</h1>
-        <p>${total} lessons in simple English, each with a real-life example, a fact and a quick quiz. ${read} read so far. <a href="#/lab">Open the Lab</a> for every interactive explainer.</p>
+        <p>${total} lessons in simple English, each with a real-life example, a fact and a quick quiz. ${read} read so far. <a href="#/lab">Open the Lab</a> for every interactive explainer, or <a href="#/problems">solve coding problems</a>.</p>
       </div>
       <label class="visually-hidden" for="lib-search">Search the Library</label>
       <input id="lib-search" class="lib-search" type="search" placeholder="Search lessons: TCP, inflation, negotiation, Docker…" autocomplete="off">
@@ -710,6 +710,7 @@
           ${l.pq.map((q, k) => `<details class="pq"><summary><span class="pq-n">${k + 1}</span>${q.q}</summary><div class="pq-a">${q.a}</div></details>`).join("")}
         </section>` : ""}
         ${l.project ? `<section class="section deep-sec project-box" aria-labelledby="s-proj"><h2 id="s-proj">${I.hammer} Mini project: ${esc(l.project.t)}</h2><p>${l.project.brief}</p><ol>${l.project.steps.map((x) => `<li>${x}</li>`).join("")}</ol>${(l.project.stretch || []).length ? `<p class="small"><b>Stretch goals:</b> ${l.project.stretch.join(" · ")}</p>` : ""}</section>` : ""}
+        ${(l.code || []).length ? `<section class="section deep-sec" aria-labelledby="s-code"><h2 id="s-code">${I.tool} Code it</h2><p class="muted small">Solve these in the browser. Automatic tests tell you when you're right.</p><div class="lesson-rows">${problemRows(l.code)}</div></section>` : ""}
         ${l.wp || l.pq ? `<section class="section"><a class="btn" href="#/tutor/more/${l.id}">${I.chat.replace("<svg", '<svg width="18" height="18"')} ${esc(tutorName())}, give me more problems like these</a></section>` : ""}
         ${quiz.length ? `<section class="section" aria-labelledby="s-quiz"><h2 id="s-quiz">${I.target} Quick check</h2>
           ${quiz.map((q, k) => {
@@ -1107,6 +1108,7 @@
         ${ring(msTotal ? msDone / msTotal : 0, "Capstones", `${msDone} of ${msTotal} milestones`, "var(--plum)")}
         ${ring(probs / pTarget, "ProntoPy", `${probs} of ${pTarget} problems`, "var(--lit)")}
         ${ring(mDone / D.mind.length, "Mind drills", `${mDone} of ${D.mind.length} written`, "var(--sky)")}
+        ${PROBLEMS.length ? ring(PROBLEMS.filter((p) => st.solved[p.id]).length / PROBLEMS.length, "Coding problems", `${PROBLEMS.filter((p) => st.solved[p.id]).length} of ${PROBLEMS.length} solved`, "var(--mint)") : ""}
       </section>
       <div class="pg-charts">
         <section class="panel">
@@ -1149,9 +1151,86 @@
     let context = null;
     if ((kind === "read" || kind === "more") && libById[id]) { const l = libById[id]; context = { title: l.t, text: strip(l.body.join("\n")) + "\nKey ideas: " + strip((l.keys || []).join("; ")) + "\nExample: " + strip(l.ex || "") }; }
     if (kind === "node" && byId[id]) { const l = byId[id]; context = { title: l.title, text: strip([l.sub, SIMPLE[l.id] || "", (l.concept || []).join("\n"), "Objectives: " + (l.objectives || []).join("; "), l.build ? "Build task: " + l.build.title + ". " + (l.build.brief || "") + " Steps: " + (l.build.steps || []).join(" | ") : ""].join("\n")).slice(0, 6000) }; }
+    if (kind === "code" && probById[id]) { const p = probById[id]; context = { title: "Coding problem: " + p.t, text: strip(p.statement) + "\nFunction name: " + p.fn + "\nThe student's current code:\n" + getDraft(p) }; }
     if (!window.PnodeTutor) { $main.innerHTML = `<p>Tutor failed to load.</p>`; return; }
-    tutorStop = window.PnodeTutor.mount($main, { context, profile: tutorProfile(), toast, prefill: kind === "node" ? "I'm stuck on this build. Give me one hint, not the answer: " : kind === "more" ? "Give me one new GATE-style problem on this lesson. Wait for my answer, then check it step by step and give the next one." : "" });
+    tutorStop = window.PnodeTutor.mount($main, { context, profile: tutorProfile(), toast, prefill: kind === "node" ? "I'm stuck on this build. Give me one hint, not the answer: " : kind === "code" ? "I'm stuck on this problem. Look at my code and give me one hint — don't write the solution." : kind === "more" ? "Give me one new GATE-style problem on this lesson. Wait for my answer, then check it step by step and give the next one." : "" });
   }
+
+  // ---------- coding problems (ProntoPy-style) ----------
+  const PROBLEMS = [];
+  LIB.forEach((l) => (l.code || []).forEach((p) => { p.lesson = l; p.area = l.area; PROBLEMS.push(p); }));
+  const probById = Object.fromEntries(PROBLEMS.map((p) => [p.id, p]));
+  const draftKey = (pid) => "pnode:code:" + pid;
+  const getDraft = (p) => { try { return localStorage.getItem(draftKey(p.id)) ?? p.starter; } catch (e) { return p.starter; } };
+  const setDraft = (pid, v) => { try { localStorage.setItem(draftKey(pid), v); } catch (e) { /* storage blocked */ } };
+  const diffCls = (d) => ({ Easy: "d-easy", Medium: "d-med", Hard: "d-hard" }[d] || "");
+  function problemRows(list) {
+    const st = S.get();
+    return list.map((p) => `<a class="lesson-row prob-row" href="#/code/${p.id}"><span class="lr-dot ${st.solved[p.id] ? "on" : ""}" aria-hidden="true"></span><span><b>${esc(p.t)}</b><br><span class="muted small">${esc(p.area.title.replace(/ \(degree depth\)/, ""))} · ${esc(p.lesson.t)}</span></span><span class="diff ${diffCls(p.diff)}">${esc(p.diff)}</span></a>`).join("");
+  }
+  let probFilter = { d: "all", s: "all", a: "all" };
+  function viewProblems() {
+    const st = S.get();
+    const areas = AREAS.filter((a) => PROBLEMS.some((p) => p.area === a));
+    const list = PROBLEMS.filter((p) => (probFilter.d === "all" || p.diff === probFilter.d) && (probFilter.a === "all" || p.area.id === probFilter.a) && (probFilter.s === "all" || (probFilter.s === "done") === !!st.solved[p.id]));
+    const solved = PROBLEMS.filter((p) => st.solved[p.id]).length;
+    const chip = (k, v, label) => `<button type="button" class="chip ${probFilter[k] === v ? "on" : ""}" data-act="prob-filter" data-k="${k}" data-v="${esc(v)}">${esc(label)}</button>`;
+    $main.innerHTML = `
+      <div class="page-head"><h1>Coding problems</h1>
+        <p>${PROBLEMS.length} problems you solve in the browser, with automatic tests — like ProntoPy, but for JavaScript, web and CS. ${solved} solved.</p>
+        <div class="meter" style="max-width:420px"><i style="width:${PROBLEMS.length ? (solved / PROBLEMS.length) * 100 : 0}%"></i></div></div>
+      <div class="pg-filter">${chip("d", "all", "All levels")}${chip("d", "Easy", "Easy")}${chip("d", "Medium", "Medium")}${chip("d", "Hard", "Hard")}</div>
+      <div class="pg-filter">${chip("s", "all", "Any status")}${chip("s", "todo", "Unsolved")}${chip("s", "done", "Solved")}</div>
+      <div class="pg-filter">${chip("a", "all", "All subjects")}${areas.map((a) => chip("a", a.id, a.title.replace(/ \(degree depth\)/, ""))).join("")}</div>
+      <div class="lesson-rows">${problemRows(list) || `<p class="muted">Nothing matches these filters.</p>`}</div>`;
+  }
+  let codeRunning = false;
+  function viewCode(pid) {
+    const p = probById[pid];
+    if (!p) return viewNotFound();
+    const st = S.get();
+    const siblings = PROBLEMS.filter((x) => x.lesson === p.lesson), i = PROBLEMS.indexOf(p), next = PROBLEMS[i + 1];
+    $main.innerHTML = `
+      <a class="crumb" href="#/read/${p.lesson.id}">${I.back} ${esc(p.lesson.t)}</a>
+      <div class="code-layout">
+        <section class="code-left">
+          <div class="phase-tag">${esc(p.area.title.replace(/ \(degree depth\)/, ""))} · <span class="diff ${diffCls(p.diff)}">${esc(p.diff)}</span>${st.solved[p.id] ? ` · <span class="solved-tag">${I.check.replace("<svg", '<svg width="14" height="14"')} Solved</span>` : ""}</div>
+          <h1 class="code-title">${esc(p.t)}</h1>
+          <div class="reader-body">${p.statement}</div>
+          ${(p.examples || []).map((x, k) => `<div class="ex-box"><b>Example ${k + 1}</b><pre>Input:  ${esc(x.in)}\nOutput: ${esc(x.out)}</pre>${x.why ? `<p class="small muted">${x.why}</p>` : ""}</div>`).join("")}
+          ${p.constraints ? `<p class="small muted"><b>Constraints:</b> ${p.constraints}</p>` : ""}
+          <div class="hint-stack">${(p.hints || []).map((h, k) => `<details class="pq"><summary><span class="pq-n">${k + 1}</span>Hint ${k + 1}</summary><div class="pq-a">${h}</div></details>`).join("")}</div>
+          <details class="pq sol"><summary><span class="pq-n">✓</span>Solution and explanation</summary><div class="pq-a"><pre><code>${esc(p.solution)}</code></pre>${p.explain ? `<p>${p.explain}</p>` : ""}${p.complexity ? `<p class="small"><b>Complexity:</b> ${p.complexity}</p>` : ""}</div></details>
+          ${siblings.length > 1 ? `<p class="small muted" style="margin-top:16px">More in this lesson: ${siblings.filter((x) => x !== p).map((x) => `<a href="#/code/${x.id}">${esc(x.t)}</a>`).join(" · ")}</p>` : ""}
+        </section>
+        <section class="code-right">
+          <div class="editor-bar"><span class="small muted">JavaScript · Tab indents · Ctrl/⌘ + Enter runs</span><button type="button" class="btn btn-quiet" id="code-reset">Reset</button></div>
+          <label class="visually-hidden" for="code-ed">Your code</label>
+          <textarea id="code-ed" class="code-ed" spellcheck="false" autocapitalize="off" autocomplete="off">${esc(getDraft(p))}</textarea>
+          <div class="btn-row"><button type="button" class="btn btn-lit" id="code-run">Run tests</button><a class="btn" href="#/tutor/code/${p.id}">${I.chat.replace("<svg", '<svg width="18" height="18"')} Ask ${esc(tutorName())}</a>${next ? `<a class="btn btn-quiet" href="#/code/${next.id}">Next problem →</a>` : ""}</div>
+          <div id="code-out" class="code-out" aria-live="polite"><p class="muted small">Run your code to see test results here.</p></div>
+        </section>
+      </div>`;
+    const ed = $main.querySelector("#code-ed"), out = $main.querySelector("#code-out");
+    ed.addEventListener("input", () => setDraft(p.id, ed.value));
+    $main.querySelector("#code-reset").addEventListener("click", () => { ed.value = p.starter; setDraft(p.id, p.starter); });
+    const runIt = async () => {
+      if (codeRunning || !window.PnodeRunner) return;
+      codeRunning = true; out.innerHTML = `<p class="muted small">Running…</p>`;
+      const r = await window.PnodeRunner.run(ed.value, p);
+      codeRunning = false;
+      if (r.timeout) { out.innerHTML = `<div class="tres fail"><b>Time limit exceeded.</b> Your code ran longer than 5 seconds — probably an infinite loop.</div>`; return; }
+      if (r.compileError) { out.innerHTML = `<div class="tres fail"><b>Error:</b> ${esc(r.compileError)}</div>${logsHtml(r.logs)}`; return; }
+      const pass = r.results.filter((x) => x.pass).length, all = r.results.length;
+      const firstFail = r.results.find((x) => !x.pass);
+      out.innerHTML = `<div class="tres ${pass === all ? "ok" : "fail"}"><b>${pass === all ? "All tests passed" : `${pass} / ${all} tests passed`}</b></div>
+        <ul class="test-list">${r.results.map((x, k) => `<li class="${x.pass ? "ok" : "fail"}"><span>${x.pass ? "✓" : "✗"}</span> ${esc(x.label || (x.input != null ? `(${x.input})` : `Test ${k + 1}`))}${!x.pass && x === firstFail ? `<div class="test-detail">${x.error ? `Error: ${esc(x.error)}` : `Expected ${esc(x.expect)}<br>Got&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${esc(x.got)}`}</div>` : ""}</li>`).join("")}</ul>${logsHtml(r.logs)}`;
+      if (pass === all && all) { const g = S.solve(p.id, p.diff); if (g) { toast(`Solved · +${g} XP`); renderHud(); } }
+    };
+    window.PnodeRunner && window.PnodeRunner.enhance(ed, runIt);
+    $main.querySelector("#code-run").addEventListener("click", runIt);
+  }
+  function logsHtml(logs) { return logs && logs.length ? `<details class="logs" open><summary>Console output</summary><pre>${esc(logs.join("\n"))}</pre></details>` : ""; }
 
   // ---------- quiz answering (feed + reader) ----------
   function answer(el, qid, q, from) {
@@ -1177,6 +1256,7 @@
     const parts = location.hash.replace(/^#\//, "").split("/");
     const id = parts[1];
 
+    if (act === "prob-filter") { probFilter[el.dataset.k] = el.dataset.v; viewProblems(); return; }
     if (act === "pg-filter") { pgFilter = el.dataset.f; rerenderProgress(); return; }
     if (act === "start-session") { S.startSession(el.dataset.kind || currentRoutine()); renderSession(); route(); toast("Block started. Phone face down."); }
     if (act === "end-session") { S.endSession(); renderSession(); route(); }
@@ -1313,9 +1393,9 @@
     document.body.classList.remove("feed-mode");
     const parts = location.hash.replace(/^#\/?/, "").split("/");
     const view = parts[0] || "today";
-    const navKey = { lesson: "map", drill: "library", mind: "library", capstone: "map", capstones: "map", plan: "today", read: "library" }[view] || view;
+    const navKey = { code: "problems", lesson: "map", drill: "library", mind: "library", capstone: "map", capstones: "map", plan: "today", read: "library" }[view] || view;
     document.querySelectorAll("[data-nav]").forEach((a) => { if (a.dataset.nav === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    const titles = { progress: "Progress", tutor: "Tutor", today: "Today", feed: "Feed", map: "Path", library: "Library", lab: "Lab", plan: "Road to August", mind: "Mind", capstones: "Capstones", me: "Me" };
+    const titles = { problems: "Coding problems", code: "Code", progress: "Progress", tutor: "Tutor", today: "Today", feed: "Feed", map: "Path", library: "Library", lab: "Lab", plan: "Road to August", mind: "Mind", capstones: "Capstones", me: "Me" };
     switch (view) {
       case "today": viewToday(); break;
       case "feed": viewFeed(); break;
@@ -1331,6 +1411,8 @@
       case "capstone": viewCapstone(parts[1]); break;
       case "me": viewMe(); break;
       case "progress": viewProgress(); break;
+      case "problems": viewProblems(); break;
+      case "code": viewCode(parts[1]); break;
       case "tutor": viewTutor(parts[1], parts[2]); break;
       default: viewNotFound();
     }

@@ -14,6 +14,7 @@
     read: 20,         // each Library lesson read
     quiz: 5,          // each quiz question answered correctly (first try)
     quest: 15,        // each daily quest completed
+    code: { Easy: 30, Medium: 50, Hard: 80 }, // each coding problem solved (all tests pass)
   };
 
   const LEVELS = [
@@ -47,6 +48,7 @@
       pronto: {},    // YYYY-MM-DD -> ProntoPy problems logged that day
       prontoUrl: "",
       read: {},      // library lessonId -> date read
+      solved: {},    // coding problemId -> { at: date, diff }
       quiz: {},      // questionId -> true (right first try) / false
       day: {},       // YYYY-MM-DD -> { cards, lessons, right, answered }
       habits: [{ id: "gym", name: "Gym" }, { id: "noig", name: "No Instagram" }, { id: "sleep", name: "7h sleep" }],
@@ -182,6 +184,11 @@
       if (state.read[id]) return false;
       state.read[id] = today(); logXp(XP.read); api.dayStat("lessons"); save(); return true;
     },
+    solve(pid, diff) {
+      if (state.solved[pid]) return 0;
+      const gain = XP.code[diff] || XP.code.Easy;
+      state.solved[pid] = { at: today(), diff }; logXp(gain); save(); return gain;
+    },
     unmarkRead(id) { if (!state.read[id]) return; delete state.read[id]; logXp(-XP.read); save(); },
     answerQuiz(qid, correct) {
       if (qid in state.quiz) return null; // only the first answer counts
@@ -225,6 +232,7 @@
       xp += Object.keys(state.read).length * XP.read;
       xp += Object.values(state.quiz).filter(Boolean).length * XP.quiz;
       for (const d in state.quests) xp += state.quests[d].length * XP.quest;
+      for (const id in state.solved) xp += XP.code[state.solved[id].diff] || XP.code.Easy;
       return xp;
     },
     level(xp) {

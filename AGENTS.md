@@ -23,6 +23,7 @@ css/styles.css          all styles; tokens on :root (dark first) + light theme
 js/store.js             progress in localStorage key "pnode:v1"; XP, levels, streaks, habits, quests
 js/app.js               router (hash routes) and every view
 js/tutor.js             offline AI tutor (Ollama), chat history in localStorage "pnode:tutor"
+js/runner.js            runs coding-problem code in a Blob Web Worker against tests (5 s timeout)
 js/data/phase-*.js      build path nodes (Phases 0–8)
 js/data/extra-nodes.js  extra build nodes inserted into phases
 js/data/track-core.js   Core CS track nodes
@@ -32,7 +33,9 @@ js/data/mind.js         Mind drills (critical thinking, EI)
 js/data/capstones.js    3 capstones: Taskforge, Bazaar, Pulse
 js/data/refs.js         study links per Library area + "Beyond Pnode"
 js/library/_lib.js      defines LIB_ADD()
+js/library/web-*.js     Web degree depth subjects (JS, async, browser, HTTP, React, Node, TS, security) with coding problems
 js/library/deep-*.js    Degree depth subjects (GATE level)
+js/library/zz-cs-labs.js coding problems attached to deep CS lessons via LIB_CODE (loads last)
 js/library/cs-*.js      CS overview areas
 js/library/eng-*.js     AI, DevOps
 js/library/life-*.js    life skills
@@ -44,7 +47,7 @@ AGENTS.md               this file
 
 ## Routes
 
-`#/today` (hero, quests, routine, habits) · `#/feed` (swipe cards) · `#/map` (Path) · `#/lesson/<nodeId>` · `#/library` · `#/library/<areaId>` · `#/read/<lessonId>` · `#/progress` (dashboard + checklists) · `#/tutor`, `#/tutor/read/<lessonId>`, `#/tutor/node/<nodeId>`, `#/tutor/more/<lessonId>` · `#/lab` · `#/plan` · `#/mind` · `#/drill/<id>` · `#/capstones` · `#/capstone/<id>` · `#/me` (settings, backup).
+`#/today` (hero, quests, routine, habits) · `#/feed` (swipe cards) · `#/map` (Path) · `#/lesson/<nodeId>` · `#/library` · `#/library/<areaId>` · `#/read/<lessonId>` · `#/progress` (dashboard + checklists) · `#/tutor`, `#/tutor/read/<lessonId>`, `#/tutor/node/<nodeId>`, `#/tutor/more/<lessonId>` · `#/problems` (all coding problems) · `#/code/<problemId>` (editor + tests) · `#/lab` · `#/plan` · `#/mind` · `#/drill/<id>` · `#/capstones` · `#/capstone/<id>` · `#/me` (settings, backup).
 
 ## Library lesson format
 
@@ -61,16 +64,24 @@ LIB_ADD({
     wp: [{ q: "worked problem", s: ["step 1", "step 2"], a: "final answer" }], // optional
     pq: [{ q: "practice question", a: "model answer" }],                      // optional
     project: { t: "Mini project", brief: "...", steps: ["..."], stretch: ["..."] }, // optional
-    viz: ["viz-id"]              // optional, must exist in js/viz
+    viz: ["viz-id"],             // optional, must exist in js/viz
+    code: [{                     // optional coding problems (ProntoPy-style)
+      id: "js-once", t: "once()", diff: "Easy" | "Medium" | "Hard", fn: "once",  // fn = function/class name the tests call
+      statement: "<p>html</p>", examples: [{ in, out, why? }], hints: ["..."], constraints?: "...",
+      starter: "function once(fn) {}", solution: "...", explain?: "...", complexity?: "...",
+      tests: [{ args: [plain data only], expect }, { label, run: "async (fn, console) => value", expect }]
+    }]
   }]}]
 });
 ```
 
 New library files must also get a `<script src="js/library/FILE.js">` line under `<!-- LIBRARY -->` in `index.html`.
 
+Problems can also be attached to an existing lesson from another file with `LIB_CODE(lessonId, [problems])`. Every solution must pass its tests and every starter must fail at least one (the maintainer's checker enforces this). Test `args` must be structured-cloneable (no functions) — use `run` for anything else.
+
 ## Progress data (localStorage "pnode:v1")
 
-`done{nodeId:date}`, `checks`, `hints`, `iq`, `notes`, `read{lessonId:date}`, `quiz{"lessonId#i":bool}`, `mind`, `cap{capId:[milestoneIdx]}`, `log{date:xp}`, `pronto{date:n}`, `habits`, `habitLog`, `quests`, `theme`. Backup/restore is on the Me page. Never rename these keys without a migration.
+`done{nodeId:date}`, `checks`, `hints`, `iq`, `notes`, `read{lessonId:date}`, `quiz{"lessonId#i":bool}`, `mind`, `cap{capId:[milestoneIdx]}`, `log{date:xp}`, `solved{problemId:{at, diff}}`, `pronto{date:n}`, `habits`, `habitLog`, `quests`, `theme`. Backup/restore is on the Me page. Never rename these keys without a migration.
 
 ## Tutor (offline AI)
 
@@ -88,3 +99,5 @@ New library files must also get a `<script src="js/library/FILE.js">` line under
 ## How to ask for help cheaply
 
 Paste this file plus only the file(s) involved and the exact error from the browser console (F12 → Console). Example: "AGENTS.md attached. On #/progress, ticking a Library box throws `TypeError: … at viewProgress (app.js:1040)`. Here is js/app.js lines 1000–1100."
+
+Code drafts for problems are saved per problem in localStorage keys `pnode:code:<problemId>`.

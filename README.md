@@ -9,6 +9,8 @@ A build-it-yourself path from web basics to senior full-stack engineer, in TypeS
 - **Path**: 74 nodes in two tracks.
   - **Build path** (67 nodes, Phases 0–8): web foundations → JavaScript → TypeScript → React → Node and APIs → databases → Next.js → senior engineering → landing the role.
   - **Core CS** (7 nodes): OOP and SOLID, processes and scheduling, concurrency, memory, networks, DBMS theory, design patterns and LLD.
+- **Coding problems**: 71 ProntoPy-style problems solved in the browser with automatic tests, hints, solutions and Nova help (Code tab).
+- **Web degree depth**: 8 subjects — JavaScript in depth, async and the event loop, HTML/CSS/DOM/rendering, HTTP and APIs, React from first principles, Node and backend engineering, TypeScript's type system, security and performance — each with labs.
 - **Degree depth**: 7 GATE-level subjects (operating systems, DBMS, computer networks, computer organisation, discrete maths, theory of computation, compiler design) with 69 long lessons, worked numericals, practice questions with answers and mini projects.
 - **Library**: 21 more areas and 208 short lessons, each with key points, a real-life example, a fact and recall quizzes.
   - Computer science: how computers work, operating systems, networks, databases, discrete maths, theory of computation, compilers, security, distributed systems, software engineering and history.
@@ -44,6 +46,7 @@ index.html
 css/styles.css
 js/store.js            progress, XP, levels, streaks, problem tally
 js/tutor.js            offline Ollama tutor (chat, streaming, modes)
+js/runner.js           coding-problem runner (Web Worker + tests)
 js/data/refs.js        study references per Library area
 js/app.js              router and views (Today, Feed, Path, Library, Lab, Plan, Mind, Capstones, Me)
 js/data/phase-*.js     build path, one file per phase

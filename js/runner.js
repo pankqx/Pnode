@@ -18,7 +18,7 @@
       if (typeof v === "number" && !isFinite(v)) return String(v);
       if (v instanceof Map) return "Map(" + JSON.stringify([...v]) + ")";
       if (v instanceof Set) return "Set(" + JSON.stringify([...v]) + ")";
-      try { return JSON.stringify(v); } catch (e) { return String(v); }
+      try { return JSON.stringify(v, (k, x) => (typeof x === "number" && !isFinite(x) ? String(x) : x === undefined ? "undefined" : x)); } catch (e) { return String(v); }
     }
     self.onmessage = async (e) => {
       const { code, fn, tests } = e.data;

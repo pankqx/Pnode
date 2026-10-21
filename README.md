@@ -1,5 +1,7 @@
 # Pnode
 
+See [AGENTS.md](AGENTS.md) for a compact project brief to give any AI assistant.
+
 A build-it-yourself path from web basics to senior full-stack engineer, in TypeScript, React, Next.js, Node, MongoDB and PostgreSQL, plus a huge library of computer science, engineering, life skills and world knowledge. DSA and Python practice live in ProntoPy, which Pnode links to and tracks daily.
 
 - **Today**: your current routine block (evening 6–7:30, night 9–11:30, weekends locked in), daily quests, next node, plan pace, ProntoPy check-in, habits and a Mind drill.
@@ -7,7 +9,8 @@ A build-it-yourself path from web basics to senior full-stack engineer, in TypeS
 - **Path**: 74 nodes in two tracks.
   - **Build path** (67 nodes, Phases 0–8): web foundations → JavaScript → TypeScript → React → Node and APIs → databases → Next.js → senior engineering → landing the role.
   - **Core CS** (7 nodes): OOP and SOLID, processes and scheduling, concurrency, memory, networks, DBMS theory, design patterns and LLD.
-- **Library**: 21 areas and 208 short lessons, each with key points, a real-life example, a fact and recall quizzes.
+- **Degree depth**: 7 GATE-level subjects (operating systems, DBMS, computer networks, computer organisation, discrete maths, theory of computation, compiler design) with 69 long lessons, worked numericals, practice questions with answers and mini projects.
+- **Library**: 21 more areas and 208 short lessons, each with key points, a real-life example, a fact and recall quizzes.
   - Computer science: how computers work, operating systems, networks, databases, discrete maths, theory of computation, compilers, security, distributed systems, software engineering and history.
   - Engineering and AI: AI concepts for builders, DevOps and cloud.
   - Life skills: learning how to learn, communication and English, character and EI, critical thinking, power and influence, career and job hunt.

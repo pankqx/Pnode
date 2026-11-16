@@ -19,7 +19,7 @@ From 1 Dec 2026 to 30 Jun 2027 Pank is full-time on Pnode: the `fulltime` routin
 
 ```
 index.html              shell, nav, splash screen, <script> tags in load order
-css/styles.css          all styles; tokens on :root (dark first) + light theme
+css/styles.css          all styles; tokens on :root (midnight dark is the default) + soft stone light theme; "Midnight layer" at the end
 js/store.js             progress in localStorage key "pnode:v1"; XP, levels, streaks, habits, quests
 js/app.js               router (hash routes) and every view
 js/tutor.js             offline AI tutor (Ollama), chat history in localStorage "pnode:tutor"

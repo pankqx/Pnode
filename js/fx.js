@@ -78,3 +78,18 @@
   }
   window.PNODE_FX = { burst, levelUp, pointer };
 })();
+
+/* Cursor spotlight on cards: sets --mx/--my on the card under the pointer (desktop only). */
+(function () {
+  if (!window.matchMedia || !matchMedia("(hover: hover)").matches) return;
+  let last = null;
+  document.addEventListener("pointermove", (e) => {
+    const card = e.target.closest && e.target.closest(".panel, .hero, .cap, .viz, .fc");
+    if (last && last !== card) { last.style.removeProperty("--mx"); last.style.removeProperty("--my"); }
+    last = card;
+    if (!card) return;
+    const r = card.getBoundingClientRect();
+    card.style.setProperty("--mx", e.clientX - r.left + "px");
+    card.style.setProperty("--my", e.clientY - r.top + "px");
+  }, { passive: true });
+})();

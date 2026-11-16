@@ -294,7 +294,7 @@
         <div class="hero-in">
           <p class="hero-kicker">${daysLeft()} days to graduation · ${esc(lv.name)}</p>
           <h1 id="hero-title">${hello}</h1>
-          <p class="hero-sub">Every dot behind this text is one lesson. The gold ones are yours. Light up the sky.</p>
+          <p class="hero-sub">Every dot behind this text is one lesson. The bright ones are yours. Light up the sky.</p>
           <div class="hero-stats">
             <div><b data-count="${doneCount}">0</b><span>nodes built</span></div>
             <div><b data-count="${Object.keys(st.read).filter((k) => libById[k]).length}">0</b><span>lessons read</span></div>
@@ -477,7 +477,7 @@
     $main.innerHTML = `
       <div class="page-head">
         <h1>The path</h1>
-        <p>${LESSONS.length} build nodes, three capstones and your Mind drills. DSA and Python live in ProntoPy; deep theory lives in the Library.</p>
+        <p>${LESSONS.length} build nodes, ${D.capstones.length} capstones and your Mind drills. DSA and Python live in ProntoPy; deep theory lives in the Library.</p>
       </div>
       <div class="btn-row" style="margin-bottom:20px"><a class="btn" href="#/capstones">Capstones</a><a class="btn" href="#/mind">Mind drills</a><a class="btn" href="#/plan">Road to May</a></div>
       <nav class="filter" aria-label="Tracks">
@@ -904,7 +904,7 @@
   function viewMe() {
     const st = S.get();
     const lv = S.level();
-    const theme = st.theme || "system";
+    const theme = st.theme || "dark";
     $main.innerHTML = `
       <div class="page-head"><h1>Me</h1><p>Your progress lives only in this browser. Back it up now and then so a cleared browser or a new laptop doesn't wipe your streak.</p></div>
       <div class="me-grid">
@@ -937,7 +937,7 @@
           </ul>
           <p class="small muted">Scrolling the Feed earns nothing by itself. Only answering quizzes and reading does.</p>
           <h2 style="margin:24px 0 12px">Appearance</h2>
-          <div class="filter" role="group" aria-label="Theme">${["system", "dark", "light"].map((t) => `<button type="button" data-act="theme" data-t="${t}" aria-pressed="${theme === t}">${t[0].toUpperCase() + t.slice(1)}</button>`).join("")}</div>
+          <div class="filter" role="group" aria-label="Theme">${["dark", "light"].map((t) => `<button type="button" data-act="theme" data-t="${t}" aria-pressed="${theme === t}">${t[0].toUpperCase() + t.slice(1)}</button>`).join("")}</div>
           <h2 style="margin:24px 0 12px">Backup</h2>
           <div class="btn-row"><button class="btn" type="button" data-act="export">Download backup file</button><label class="btn" for="import-file">Restore from file</label><input id="import-file" type="file" accept="application/json,.json" class="visually-hidden"></div>
           <p class="small muted" style="margin:16px 0 8px">Or copy your backup as text, and paste one here to restore it on another device.</p>
@@ -1333,7 +1333,7 @@
       renderHud(); viewDrill(el.dataset.id);
     }
     if (act === "mind-filter") { try { sessionStorage.setItem("pnode:mindKind", el.dataset.k); } catch (err) { /* storage blocked */ } viewMind(); }
-    if (act === "theme") { S.setTheme(el.dataset.t === "system" ? null : el.dataset.t); applyTheme(); viewMe(); }
+    if (act === "theme") { S.setTheme(el.dataset.t === "dark" ? null : el.dataset.t); applyTheme(); viewMe(); }
     if (act === "export") {
       const blob = new Blob([S.exportJson()], { type: "application/json" });
       const a = document.createElement("a");

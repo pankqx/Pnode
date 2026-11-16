@@ -1,7 +1,7 @@
 /* Pnode service worker: makes Pnode installable on a phone and usable offline.
    Network first (so new content shows up as soon as it's pushed), falling back to the
    cached copy when offline. Only same-origin GET requests and Google Fonts are cached. */
-const CACHE = "pnode-v1";
+const CACHE = "pnode-v2";
 const CORE = ["./", "./index.html", "./css/styles.css", "./manifest.webmanifest", "./icons/icon-192.png"];
 
 self.addEventListener("install", (e) => {

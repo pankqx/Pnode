@@ -1,0 +1,21 @@
+{
+  "name": "Pnode",
+  "short_name": "Pnode",
+  "description": "Pank's path to a job-ready AI full-stack and DevOps engineer.",
+  "start_url": "./index.html#/today",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F2A44",
+  "theme_color": "#0F2A44",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Today", "url": "./index.html#/today" },
+    { "name": "Feed", "url": "./index.html#/feed" },
+    { "name": "Coding problems", "url": "./index.html#/problems" }
+  ]
+}

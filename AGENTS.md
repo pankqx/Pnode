@@ -13,7 +13,7 @@ A personal learning web app for Pank (MCA student, India). Goal: job-ready full-
 
 ## Routine the app is built around
 
-From 1 Dec 2026 to 30 Jun 2027 Pank is full-time on Pnode: the `fulltime` routine (about 6.5 hours, Monday–Saturday; Sunday uses `weekend`). Before that: evening and night blocks on weekdays. `ROUTINES` and `FULLTIME` in `js/app.js` encode this.
+From 1 Dec 2026 to 30 Jun 2027 Pank is full-time on Pnode: the `fulltime` routine: work 9–1, Pnode 3–11 pm, Monday–Saturday; Sunday uses `weekend`. Before that: evening and night blocks on weekdays. `ROUTINES` and `FULLTIME` in `js/app.js` encode this.
 
 ## File map
 
@@ -30,7 +30,7 @@ js/data/track-core.js   Core CS track nodes
 js/data/simple.js       "In plain words" analogy per node
 js/data/plan.js         Road to May month-by-month targets
 js/data/mind.js         Mind drills (critical thinking, EI)
-js/data/capstones.js    3 capstones: Taskforge, Bazaar, Pulse
+js/data/capstones.js    5 capstones: Taskforge, Bazaar, Pulse, Sahayak (AI), Shipyard (DevOps)
 js/data/refs.js         study links per Library area + "Beyond Pnode"
 js/library/_lib.js      defines LIB_ADD()
 js/library/web-*.js     Web degree depth subjects (JS, async, browser, HTTP, React, Node, TS, security) with coding problems
@@ -40,6 +40,9 @@ js/library/cs-*.js      CS overview areas
 js/library/eng-*.js     AI, DevOps (overviews)
 js/library/deep-ai.js   AI engineering, hands-on (with problems)
 js/library/deep-devops.js DevOps in practice (with problems)
+js/library/deep-pyai.js Python AI stack (lessons + 'Build it' projects done locally)
+js/fx.js                celebrations: PNODE_FX.burst() on XP toasts, PNODE_FX.levelUp() on level change
+sw.js, manifest.webmanifest, icons/  installable PWA, network-first offline cache
 js/library/life-*.js    life skills
 js/library/world-*.js   news/economics, money, style
 js/viz/core.js          explainer engine (PNODE_VIZ.add, VZ helpers)

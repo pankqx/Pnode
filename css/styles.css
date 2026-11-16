@@ -876,3 +876,14 @@ a.hud:hover { background: var(--bg-raised); }
 .test-list li.ok span { color: var(--mint); } .test-list li.fail span { color: var(--danger); }
 .test-detail { margin: 6px 0 4px 18px; padding: 6px 10px; background: var(--bg-sunk); border-radius: var(--r-sm); color: var(--ink); }
 .logs { margin-top: 10px; } .logs pre { max-height: 200px; overflow: auto; background: var(--bg-sunk); padding: 8px; border-radius: var(--r-sm); font-size: .8rem; }
+
+/* ---------- celebrations (js/fx.js) ---------- */
+.fx-canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 120; }
+.fx-level { position: fixed; inset: 0; z-index: 119; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(6px); opacity: 0; transition: opacity .35s ease; cursor: pointer; }
+.fx-level.on { opacity: 1; }
+.fx-level-card { text-align: center; padding: 28px 32px; transform: scale(.8) translateY(12px); transition: transform .5s cubic-bezier(.2, 1.4, .4, 1); }
+.fx-level.on .fx-level-card { transform: none; }
+.fx-level-kick { font: 800 .85rem/1 var(--f-display); letter-spacing: .22em; text-transform: uppercase; color: var(--lit); }
+.fx-level-name { font: 800 clamp(2.6rem, 12vw, 4.5rem)/1 var(--f-display); color: var(--ink); margin: 12px 0 10px; text-shadow: 0 0 40px color-mix(in srgb, var(--lit) 45%, transparent); }
+.fx-level-sub { color: var(--ink-2); font-size: 1rem; }
+@media (prefers-reduced-motion: reduce) { .fx-level, .fx-level-card { transition: none; } }

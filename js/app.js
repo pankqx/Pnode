@@ -85,12 +85,16 @@
   let toastTimer;
   function toast(msg) {
     $toast.textContent = msg;
+    if (/XP|solved|complete|done/i.test(msg) && window.PNODE_FX) PNODE_FX.burst();
     $toast.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => $toast.classList.remove("show"), 2600);
   }
+  let lastLevel = null, lastXp = 0;
   function renderHud() {
     const lv = S.level();
+    if (lastLevel && lastLevel !== lv.name && lv.xp > lastXp && window.PNODE_FX) PNODE_FX.levelUp(lv.name);
+    lastLevel = lv.name; lastXp = lv.xp;
     $hud.innerHTML =
       `<span class="hud-item flame" title="Day streak">${I.flame}<b>${S.streak()}</b></span>` +
       `<span class="hud-item" title="Total XP">${I.bolt}<b>${lv.xp.toLocaleString()}</b><span class="visually-hidden">XP</span></span>` +
@@ -116,16 +120,16 @@
       { name: "Life skills", min: 15, what: "One lesson from Communication, Character, Thinking or Power." },
       { name: "Mind", min: 10, what: "A Mind drill or three honest lines in your notes. Then sleep." },
     ] },
-    fulltime: { name: "Full-time day", time: "10:00 am–5:30 pm", blocks: [
+    fulltime: { name: "Deep work", time: "3:00–11:00 pm", blocks: [
       { name: "Build", min: 120, what: "Your current build node or capstone. Type every line yourself; AI explains, you write.", main: true },
       { name: "Break", min: 15, what: "Walk, water, no phone." },
+      { name: "AI + DevOps", min: 105, what: "One lesson from AI engineering, the Python AI stack or DevOps in practice, including its problem or 'Build it' task.", main: true },
+      { name: "Break", min: 45, what: "Dinner, away from the screen." },
       { name: "ProntoPy", min: 60, what: "DSA in ProntoPy. Two problems: one new pattern, one re-solve." },
-      { name: "Break", min: 30, what: "Lunch, away from the screen." },
-      { name: "AI + DevOps", min: 90, what: "One lesson from 'AI engineering, hands-on' or 'DevOps in practice', including its coding problem.", main: true },
-      { name: "Break", min: 15, what: "Stretch. Eyes off screens." },
-      { name: "Jobs", min: 30, what: "Three tailored applications or one referral message. Every single day." },
-      { name: "Life skills", min: 20, what: "One lesson from Communication, Character or Power." },
-      { name: "Mind", min: 10, what: "A Mind drill, or three honest lines: what I did, what scared me, what's next." },
+      { name: "Break", min: 10, what: "Stretch. Eyes off screens." },
+      { name: "Jobs", min: 40, what: "Three tailored applications, or referral messages and follow-ups. Every day." },
+      { name: "Life skills", min: 25, what: "One lesson from Communication, Character or Power, or a Library CS lesson." },
+      { name: "Mind", min: 10, what: "A Mind drill, or three honest lines: what I did, what scared me, what's next. Then sleep." },
     ] },
     weekend: { name: "Weekend deep work", time: "locked in", blocks: [
       { name: "Capstone", min: 120, what: "Deep work on your capstone or build node. Phone in another room.", main: true },
@@ -136,7 +140,7 @@
       { name: "Review", min: 30, what: "Review the week: notes, plan next week, write one Mind drill." },
     ] },
   };
-  // Full-time stretch after 3rd-semester exams: 1 Dec 2026 to graduation, Monday to Saturday.
+  // Full-time stretch after 3rd-semester exams: work 9–1, Pnode 3–11 pm, Monday to Saturday, 1 Dec 2026 to graduation.
   const FULLTIME = { from: "2026-12-01", to: "2027-06-30" };
   function currentRoutine() {
     const now = new Date(), day = now.getDay();

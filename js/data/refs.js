@@ -5,6 +5,33 @@ window.PNODE = window.PNODE || {};
   const yt = (q) => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
   const np = (q) => "https://www.youtube.com/results?search_query=" + encodeURIComponent("NPTEL " + q);
   window.PNODE.refs = {
+    "deep-ai": [
+      { kind: "site", t: "roadmap.sh: AI engineer roadmap", u: "https://roadmap.sh/ai-engineer" },
+      { kind: "course", t: "DeepLearning.AI short courses (free, 1–2 hours each: RAG, agents, evals)", u: "https://www.deeplearning.ai/short-courses/" },
+      { kind: "docs", t: "Prompt Engineering Guide", u: "https://www.promptingguide.ai/" },
+      { kind: "docs", t: "OWASP Top 10 for LLM applications", u: "https://owasp.org/www-project-top-10-for-large-language-model-applications/" },
+      { kind: "docs", t: "pgvector: vector search in PostgreSQL", u: "https://github.com/pgvector/pgvector" },
+      { kind: "video", t: "Andrej Karpathy: Intro to Large Language Models", u: yt("Andrej Karpathy intro to large language models") },
+    ],
+    "deep-pyai": [
+      { kind: "course", t: "LangChain Academy: free LangGraph course", u: "https://academy.langchain.com/" },
+      { kind: "course", t: "Hugging Face courses (LLMs, agents, NLP), free", u: "https://huggingface.co/learn" },
+      { kind: "docs", t: "FastAPI tutorial", u: "https://fastapi.tiangolo.com/tutorial/" },
+      { kind: "docs", t: "scikit-learn user guide", u: "https://scikit-learn.org/stable/user_guide.html" },
+      { kind: "course", t: "fast.ai: Practical Deep Learning for Coders", u: "https://course.fast.ai/" },
+      { kind: "docs", t: "Model Context Protocol docs", u: "https://modelcontextprotocol.io/" },
+      { kind: "video", t: "Kaggle Learn: pandas and intro to ML (free micro-courses)", u: "https://www.kaggle.com/learn" },
+    ],
+    "deep-devops": [
+      { kind: "site", t: "roadmap.sh: DevOps roadmap", u: "https://roadmap.sh/devops" },
+      { kind: "docs", t: "Docker: Get started", u: "https://docs.docker.com/get-started/" },
+      { kind: "docs", t: "GitHub Actions documentation", u: "https://docs.github.com/en/actions" },
+      { kind: "course", t: "Terraform tutorials (HashiCorp)", u: "https://developer.hashicorp.com/terraform/tutorials" },
+      { kind: "docs", t: "Kubernetes tutorials", u: "https://kubernetes.io/docs/tutorials/" },
+      { kind: "book", t: "Google SRE books (free online)", u: "https://sre.google/books/" },
+      { kind: "course", t: "AWS Skill Builder (free cloud practitioner training)", u: "https://skillbuilder.aws/" },
+      { kind: "video", t: "TechWorld with Nana: DevOps and Kubernetes", u: yt("TechWorld with Nana DevOps") },
+    ],
     computers: [
       { kind: "course", t: "Nand2Tetris: build a computer from logic gates", u: "https://www.nand2tetris.org/" },
       { kind: "course", t: "Harvard CS50: Introduction to Computer Science", u: "https://cs50.harvard.edu/x/" },

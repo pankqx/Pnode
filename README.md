@@ -2,9 +2,9 @@
 
 See [AGENTS.md](AGENTS.md) for a compact project brief to give any AI assistant.
 
-A build-it-yourself path from web basics to senior full-stack engineer, in TypeScript, React, Next.js, Node, MongoDB and PostgreSQL, plus a huge library of computer science, engineering, life skills and world knowledge. DSA and Python practice live in ProntoPy, which Pnode links to and tracks daily.
+A build-it-yourself path from web basics to a job-ready full-stack engineer who can also build AI features and ship them to production, in TypeScript, React, Next.js, Node, MongoDB and PostgreSQL, plus a huge library of computer science, engineering, life skills and world knowledge. DSA and Python practice live in ProntoPy, which Pnode links to and tracks daily.
 
-- **Today**: your current routine block (evening 6–7:30, night 9–11:30, weekends locked in), daily quests, next node, plan pace, ProntoPy check-in, habits and a Mind drill.
+- **Today**: your current routine block (from 1 Dec 2026 a full-time day of about 6.5 hours, Monday–Saturday; before that, evening and night blocks), daily quests, next node, plan pace, ProntoPy check-in, habits and a Mind drill.
 - **Feed**: a swipeable feed of concept, key-idea, fact, real-life and quiz cards drawn from the whole library, with checkpoints so it never becomes endless scrolling. XP comes from answering, not scrolling.
 - **Path**: 74 nodes in two tracks.
   - **Build path** (67 nodes, Phases 0–8): web foundations → JavaScript → TypeScript → React → Node and APIs → databases → Next.js → senior engineering → landing the role.
@@ -14,7 +14,7 @@ A build-it-yourself path from web basics to senior full-stack engineer, in TypeS
 - **Degree depth**: 7 GATE-level subjects (operating systems, DBMS, computer networks, computer organisation, discrete maths, theory of computation, compiler design) with 69 long lessons, worked numericals, practice questions with answers and mini projects.
 - **Library**: 21 more areas and 208 short lessons, each with key points, a real-life example, a fact and recall quizzes.
   - Computer science: how computers work, operating systems, networks, databases, discrete maths, theory of computation, compilers, security, distributed systems, software engineering and history.
-  - Engineering and AI: AI concepts for builders, DevOps and cloud.
+  - Engineering and AI: AI concepts for builders, DevOps and cloud, plus two hands-on subjects: **AI engineering** (LLM APIs, structured output, retries, embeddings, chunking, RAG, tool calling and agents, guardrails, evals, cost, local models) and **DevOps in practice** (Linux, Nginx and TLS, Docker and Compose, GitHub Actions, safe deploys, AWS, Terraform, Kubernetes, observability, secrets), with 16 coding problems and three new explainers (RAG pipeline, agent loop, CI/CD pipeline).
   - Life skills: learning how to learn, communication and English, character and EI, critical thinking, power and influence, career and job hunt.
   - World and money: reading the news and economics, money and trading (educational only), style on a budget.
 - **Progress**: completion rings, a plan-vs-you line chart, 30-day XP bars, a 26-week activity heatmap, your weakest quiz areas, and tickable checklists for every node, lesson, milestone and drill.
@@ -24,7 +24,7 @@ A build-it-yourself path from web basics to senior full-stack engineer, in TypeS
 - **Lab**: every interactive explainer in one place (event loop, React re-renders, JWT flow, SQL joins, race conditions, consistent hashing, CPU scheduling, Docker layers, Kubernetes reconcile and many more).
 - **Mind**: written drills for problem solving, critical thinking and emotional intelligence.
 - **Capstones**: Taskforge, Bazaar and Pulse, with milestones and the senior signals reviewers look for.
-- **Road to August**: a month-by-month plan to August 2027 with build, core, capstone, library and ProntoPy targets.
+- **Road to May**: a month-by-month plan to graduation in May 2027 with build, core, capstone, library and ProntoPy targets.
 - **XP, levels, streaks and habits**: Intern → Principal.
 
 Progress is stored in your browser (localStorage). Use **Me → Copy backup** (or Download backup file) to save it, and paste or load it on another device to restore.

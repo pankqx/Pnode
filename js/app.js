@@ -116,6 +116,17 @@
       { name: "Life skills", min: 15, what: "One lesson from Communication, Character, Thinking or Power." },
       { name: "Mind", min: 10, what: "A Mind drill or three honest lines in your notes. Then sleep." },
     ] },
+    fulltime: { name: "Full-time day", time: "10:00 am–5:30 pm", blocks: [
+      { name: "Build", min: 120, what: "Your current build node or capstone. Type every line yourself; AI explains, you write.", main: true },
+      { name: "Break", min: 15, what: "Walk, water, no phone." },
+      { name: "ProntoPy", min: 60, what: "DSA in ProntoPy. Two problems: one new pattern, one re-solve." },
+      { name: "Break", min: 30, what: "Lunch, away from the screen." },
+      { name: "AI + DevOps", min: 90, what: "One lesson from 'AI engineering, hands-on' or 'DevOps in practice', including its coding problem.", main: true },
+      { name: "Break", min: 15, what: "Stretch. Eyes off screens." },
+      { name: "Jobs", min: 30, what: "Three tailored applications or one referral message. Every single day." },
+      { name: "Life skills", min: 20, what: "One lesson from Communication, Character or Power." },
+      { name: "Mind", min: 10, what: "A Mind drill, or three honest lines: what I did, what scared me, what's next." },
+    ] },
     weekend: { name: "Weekend deep work", time: "locked in", blocks: [
       { name: "Capstone", min: 120, what: "Deep work on your capstone or build node. Phone in another room.", main: true },
       { name: "Break", min: 20, what: "Walk, eat, no screens." },
@@ -125,8 +136,12 @@
       { name: "Review", min: 30, what: "Review the week: notes, plan next week, write one Mind drill." },
     ] },
   };
+  // Full-time stretch after 3rd-semester exams: 1 Dec 2026 to graduation, Monday to Saturday.
+  const FULLTIME = { from: "2026-12-01", to: "2027-06-30" };
   function currentRoutine() {
     const now = new Date(), day = now.getDay();
+    const iso = S.today ? S.today() : now.toISOString().slice(0, 10);
+    if (iso >= FULLTIME.from && iso <= FULLTIME.to) return day === 0 ? "weekend" : "fulltime";
     if (day === 0 || day === 6) return "weekend";
     return now.getHours() < 20 ? "evening" : "night";
   }
@@ -273,7 +288,7 @@
       <section class="hero" aria-labelledby="hero-title">
         <canvas class="hero-sky" aria-hidden="true"></canvas>
         <div class="hero-in">
-          <p class="hero-kicker">${daysLeft()} days to August · ${esc(lv.name)}</p>
+          <p class="hero-kicker">${daysLeft()} days to graduation · ${esc(lv.name)}</p>
           <h1 id="hero-title">${hello}</h1>
           <p class="hero-sub">Every dot behind this text is one lesson. The gold ones are yours. Light up the sky.</p>
           <div class="hero-stats">
@@ -294,9 +309,9 @@
           ${nextHtml}
           ${questsHtml()}
           ${PLAN ? `<section class="panel" aria-labelledby="plan-title">
-            <div class="muted small">Road to August</div>
+            <div class="muted small">Road to May</div>
             <h2 id="plan-title" style="margin:4px 0 8px;font-size:1.4rem"><span class="pace ${p.cls}">${p.text}</span></h2>
-            <p class="muted" style="margin:0 0 12px">${p.got} of ${p.exp} planned nodes and milestones done by today · ${daysLeft()} days to the end of August</p>
+            <p class="muted" style="margin:0 0 12px">${p.got} of ${p.exp} planned nodes and milestones done by today · ${daysLeft()} days to the end of May</p>
             <a class="btn" href="#/plan">See the month-by-month plan</a>
           </section>` : ""}
         </div>
@@ -460,7 +475,7 @@
         <h1>The path</h1>
         <p>${LESSONS.length} build nodes, three capstones and your Mind drills. DSA and Python live in ProntoPy; deep theory lives in the Library.</p>
       </div>
-      <div class="btn-row" style="margin-bottom:20px"><a class="btn" href="#/capstones">Capstones</a><a class="btn" href="#/mind">Mind drills</a><a class="btn" href="#/plan">Road to August</a></div>
+      <div class="btn-row" style="margin-bottom:20px"><a class="btn" href="#/capstones">Capstones</a><a class="btn" href="#/mind">Mind drills</a><a class="btn" href="#/plan">Road to May</a></div>
       <nav class="filter" aria-label="Tracks">
         ${TRACKS.map((t) => {
           const n = trackLessons(t.id).length, d = trackLessons(t.id).filter((l) => st.done[l.id]).length;
@@ -696,7 +711,7 @@
           <h1>${esc(l.t)}</h1>
           <div class="meta"><span>${l.mins || 4} min read</span><span>+${S.XP.read} XP</span>${quiz.length ? `<span>${plural(quiz.length, "quiz question")}</span>` : ""}</div>
         </header>
-        <div class="reader-body">${l.body.map((p) => (p.startsWith("<") ? p : `<p>${p}</p>`)).join("")}</div>
+        <div class="reader-body">${l.body.map((p) => (/^<(pre|table|ul|ol|div|p|h\d|figure|blockquote)\b/i.test(p) ? p : `<p>${p}</p>`)).join("")}</div>
         ${l.keys && l.keys.length ? `<section class="keys" aria-label="Key ideas"><h2>${I.key} Remember this</h2><ul>${l.keys.map((k) => `<li>${k}</li>`).join("")}</ul></section>` : ""}
         <div class="reader-boxes">
           ${l.ex ? `<div class="rbox ex"><b>${I.globe} Real life</b><p>${l.ex}</p></div>` : ""}
@@ -788,12 +803,12 @@
     ];
     $main.innerHTML = `
       <a class="crumb" href="#/today">${I.back} Today</a>
-      <div class="page-head"><h1>Road to August</h1><p>${esc(PLAN.intro)}</p></div>
+      <div class="page-head"><h1>Road to May</h1><p>${esc(PLAN.intro)}</p></div>
       <div class="me-grid">
         <section class="panel">
           <div class="muted small">Today</div>
           <h2 style="margin:4px 0 8px"><span class="pace ${p.cls}">${p.text}</span></h2>
-          <p class="muted">The plan expects ${p.exp} build nodes, Core CS nodes and capstone milestones done by today. You have ${p.got}. Library: ${Object.keys(st.read).length} of ${expected("library")} expected. ProntoPy: ${S.totalProblems()} of ${expected("pronto")} expected. ${daysLeft()} days left until the end of August.</p>
+          <p class="muted">The plan expects ${p.exp} build nodes, Core CS nodes and capstone milestones done by today. You have ${p.got}. Library: ${Object.keys(st.read).length} of ${expected("library")} expected. ProntoPy: ${S.totalProblems()} of ${expected("pronto")} expected. ${daysLeft()} days left until the end of May.</p>
           <p class="small muted" style="margin:0">${p.cls === "behind" ? "Catch up with one longer weekend block, or drop a stretch goal. Don't steal from sleep or ProntoPy." : "Keep the daily chain. Consistency beats intensity."}</p>
         </section>
         <section class="panel">
@@ -1113,7 +1128,7 @@
       <div class="pg-charts">
         <section class="panel">
           <h2 class="pg-h">Plan vs you</h2>
-          <p class="muted small">Dashed line: where the Road to August expects you. Solid line: what you've actually finished.</p>
+          <p class="muted small">Dashed line: where the Road to May expects you. Solid line: what you've actually finished.</p>
           ${planChart()}
         </section>
         <section class="panel">
@@ -1395,7 +1410,7 @@
     const view = parts[0] || "today";
     const navKey = { code: "problems", lesson: "map", drill: "library", mind: "library", capstone: "map", capstones: "map", plan: "today", read: "library" }[view] || view;
     document.querySelectorAll("[data-nav]").forEach((a) => { if (a.dataset.nav === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    const titles = { problems: "Coding problems", code: "Code", progress: "Progress", tutor: "Tutor", today: "Today", feed: "Feed", map: "Path", library: "Library", lab: "Lab", plan: "Road to August", mind: "Mind", capstones: "Capstones", me: "Me" };
+    const titles = { problems: "Coding problems", code: "Code", progress: "Progress", tutor: "Tutor", today: "Today", feed: "Feed", map: "Path", library: "Library", lab: "Lab", plan: "Road to May", mind: "Mind", capstones: "Capstones", me: "Me" };
     switch (view) {
       case "today": viewToday(); break;
       case "feed": viewFeed(); break;

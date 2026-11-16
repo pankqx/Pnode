@@ -4,7 +4,7 @@ Give this file to an AI assistant (Claude, ChatGPT, Copilot, a local model) befo
 
 ## What Pnode is
 
-A personal learning web app for Pank (MCA student, India). Goal: job-ready full-stack engineer (TypeScript, React, Next.js, Node, MongoDB, PostgreSQL) with GATE-level CS fundamentals by **August 2027**. Single user, no backend, no accounts.
+A personal learning web app for Pank (MCA student, India). Goal: job-ready full-stack engineer (TypeScript, React, Next.js, Node, MongoDB, PostgreSQL) who can build AI features and deploy them (DevOps), with solid CS fundamentals, by graduation in **May 2027**. Single user, no backend, no accounts.
 
 - Repo: `github.com/pankqx/Pnode` (old name `rea-testing` still redirects). Hosted on GitHub Pages from `main`, root folder.
 - Stack: plain HTML + CSS + vanilla JavaScript. **No build step, no npm, no framework.** Open `index.html` directly or serve the folder.
@@ -13,7 +13,7 @@ A personal learning web app for Pank (MCA student, India). Goal: job-ready full-
 
 ## Routine the app is built around
 
-College 9–4, hostel duty till 6. Pnode 6:00–7:30 pm and 9:00–11:30 pm on weekdays; weekends fully. `ROUTINES` in `js/app.js` encodes this.
+From 1 Dec 2026 to 30 Jun 2027 Pank is full-time on Pnode: the `fulltime` routine (about 6.5 hours, Monday–Saturday; Sunday uses `weekend`). Before that: evening and night blocks on weekdays. `ROUTINES` and `FULLTIME` in `js/app.js` encode this.
 
 ## File map
 
@@ -28,7 +28,7 @@ js/data/phase-*.js      build path nodes (Phases 0–8)
 js/data/extra-nodes.js  extra build nodes inserted into phases
 js/data/track-core.js   Core CS track nodes
 js/data/simple.js       "In plain words" analogy per node
-js/data/plan.js         Road to August month-by-month targets
+js/data/plan.js         Road to May month-by-month targets
 js/data/mind.js         Mind drills (critical thinking, EI)
 js/data/capstones.js    3 capstones: Taskforge, Bazaar, Pulse
 js/data/refs.js         study links per Library area + "Beyond Pnode"
@@ -37,7 +37,9 @@ js/library/web-*.js     Web degree depth subjects (JS, async, browser, HTTP, Rea
 js/library/deep-*.js    Degree depth subjects (GATE level)
 js/library/zz-cs-labs.js coding problems attached to deep CS lessons via LIB_CODE (loads last)
 js/library/cs-*.js      CS overview areas
-js/library/eng-*.js     AI, DevOps
+js/library/eng-*.js     AI, DevOps (overviews)
+js/library/deep-ai.js   AI engineering, hands-on (with problems)
+js/library/deep-devops.js DevOps in practice (with problems)
 js/library/life-*.js    life skills
 js/library/world-*.js   news/economics, money, style
 js/viz/core.js          explainer engine (PNODE_VIZ.add, VZ helpers)

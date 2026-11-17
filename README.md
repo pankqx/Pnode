@@ -27,6 +27,8 @@ A build-it-yourself path from web basics to a job-ready full-stack engineer who 
 - **Road to May**: a month-by-month plan to graduation in May 2027 with build, core, capstone, library and ProntoPy targets.
 - **XP, levels, streaks and habits**: Intern → Principal.
 
+**Mirror** (`#/mirror`): a 2-minute nightly check-in (sleep, mood, stress, movement, food, social media, people, money, what you learned, a private habit logged neutrally, and a journal) and a **weekly review written by your local Ollama model**, with patterns like "mood is lower after short sleep". Check-ins from [MindMirror](https://pankqx.github.io/MindMirror/) in the same browser are pulled in automatically, read-only. Everything stays on your device.
+
 **Install it on your phone**: open the site in Chrome on Android → menu → Add to Home screen (or Install app). It opens full-screen like an app and keeps working offline.
 
 Earning XP throws a burst of stars and levelling up gets a full-screen moment (both switch off if your phone has reduced motion on).

@@ -23,6 +23,7 @@ css/styles.css          all styles; tokens on :root (midnight dark is the defaul
 js/store.js             progress in localStorage key "pnode:v1"; XP, levels, streaks, habits, quests
 js/app.js               router (hash routes) and every view
 js/tutor.js             offline AI tutor (Ollama), chat history in localStorage "pnode:tutor"
+js/mirror.js            Mirror: daily check-in + weekly review by local Ollama; localStorage "pnode:mirror"; reads MindMirror's IndexedDB "mindmirror" (checkins) read-only, never creates or writes it
 js/runner.js            runs coding-problem code in a Blob Web Worker against tests (5 s timeout)
 js/data/phase-*.js      build path nodes (Phases 0–8)
 js/data/extra-nodes.js  extra build nodes inserted into phases
@@ -52,7 +53,7 @@ AGENTS.md               this file
 
 ## Routes
 
-`#/today` (hero, quests, routine, habits) · `#/feed` (swipe cards) · `#/map` (Path) · `#/lesson/<nodeId>` · `#/library` · `#/library/<areaId>` · `#/read/<lessonId>` · `#/progress` (dashboard + checklists) · `#/tutor`, `#/tutor/read/<lessonId>`, `#/tutor/node/<nodeId>`, `#/tutor/more/<lessonId>` · `#/problems` (all coding problems) · `#/code/<problemId>` (editor + tests) · `#/lab` · `#/plan` · `#/mind` · `#/drill/<id>` · `#/capstones` · `#/capstone/<id>` · `#/me` (settings, backup).
+`#/today` (hero, quests, routine, habits) · `#/feed` (swipe cards) · `#/map` (Path) · `#/lesson/<nodeId>` · `#/library` · `#/library/<areaId>` · `#/read/<lessonId>` · `#/progress` (dashboard + checklists) · `#/mirror`, `#/mirror/week`, `#/mirror/data` · `#/tutor`, `#/tutor/read/<lessonId>`, `#/tutor/node/<nodeId>`, `#/tutor/more/<lessonId>` · `#/problems` (all coding problems) · `#/code/<problemId>` (editor + tests) · `#/lab` · `#/plan` · `#/mind` · `#/drill/<id>` · `#/capstones` · `#/capstone/<id>` · `#/me` (settings, backup).
 
 ## Library lesson format
 
@@ -87,6 +88,8 @@ Problems can also be attached to an existing lesson from another file with `LIB_
 ## Progress data (localStorage "pnode:v1")
 
 `done{nodeId:date}`, `checks`, `hints`, `iq`, `notes`, `read{lessonId:date}`, `quiz{"lessonId#i":bool}`, `mind`, `cap{capId:[milestoneIdx]}`, `log{date:xp}`, `solved{problemId:{at, diff}}`, `pronto{date:n}`, `habits`, `habitLog`, `quests`, `theme`. Backup/restore is on the Me page. Never rename these keys without a migration.
+
+Mirror data (`pnode:mirror`) is separate: `days{date:{sleep,mood,stress,energy,move,food,social,spend[],people[],learned,habit,trigger,win,change,journal}}`, `reviews{weekStartMonday:{at,text,model}}`, `settings`. It is deeply personal: never send it anywhere automatically, never log it, and keep the weekly review prompt non-judgemental (see `SYSTEM` in js/mirror.js). MindMirror is a separate repo and app (pankqx/MindMirror); don't copy its code here.
 
 ## Tutor (offline AI)
 

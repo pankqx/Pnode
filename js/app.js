@@ -310,6 +310,7 @@
       </section>
       <div class="today-grid">
         <div class="stack-col">
+          ${window.PnodeMirror ? window.PnodeMirror.todayCard() : ""}
           ${nextHtml}
           ${questsHtml()}
           ${PLAN ? `<section class="panel" aria-labelledby="plan-title">
@@ -1166,6 +1167,7 @@
     const recent = LIB.filter((l) => st.read[l.id]).sort((a, b) => (st.read[b.id] > st.read[a.id] ? 1 : -1)).slice(0, 5).map((l) => l.t);
     return `level ${lv.name} (${lv.xp} XP), ${Object.keys(st.done).filter((id) => byId[id]).length}/${LESSONS.length} build nodes done, current node: ${nl ? nl.title : "all done"}, ${read}/${LIB.length} library lessons read${recent.length ? " (recently: " + recent.join("; ") + ")" : ""}, ${S.totalProblems()} DSA problems solved in ProntoPy, ${S.streak()}-day streak.`;
   }
+  let mirrorStop = null;
   function viewTutor(kind, id) {
     let context = null;
     if ((kind === "read" || kind === "more") && libById[id]) { const l = libById[id]; context = { title: l.t, text: strip(l.body.join("\n")) + "\nKey ideas: " + strip((l.keys || []).join("; ")) + "\nExample: " + strip(l.ex || "") }; }
@@ -1408,13 +1410,14 @@
     destroyViz();
     if (heroStop) { heroStop(); heroStop = null; }
     if (tutorStop) { tutorStop(); tutorStop = null; }
+    if (mirrorStop) { mirrorStop(); mirrorStop = null; }
     if (feedObserver) { feedObserver.disconnect(); feedObserver = null; }
     document.body.classList.remove("feed-mode");
     const parts = location.hash.replace(/^#\/?/, "").split("/");
     const view = parts[0] || "today";
     const navKey = { code: "problems", lesson: "map", drill: "library", mind: "library", capstone: "map", capstones: "map", plan: "today", read: "library" }[view] || view;
     document.querySelectorAll("[data-nav]").forEach((a) => { if (a.dataset.nav === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    const titles = { problems: "Coding problems", code: "Code", progress: "Progress", tutor: "Tutor", today: "Today", feed: "Feed", map: "Path", library: "Library", lab: "Lab", plan: "Road to May", mind: "Mind", capstones: "Capstones", me: "Me" };
+    const titles = { mirror: "Mirror", problems: "Coding problems", code: "Code", progress: "Progress", tutor: "Tutor", today: "Today", feed: "Feed", map: "Path", library: "Library", lab: "Lab", plan: "Road to May", mind: "Mind", capstones: "Capstones", me: "Me" };
     switch (view) {
       case "today": viewToday(); break;
       case "feed": viewFeed(); break;
@@ -1433,6 +1436,7 @@
       case "problems": viewProblems(); break;
       case "code": viewCode(parts[1]); break;
       case "tutor": viewTutor(parts[1], parts[2]); break;
+      case "mirror": mirrorStop = window.PnodeMirror ? window.PnodeMirror.mount($main, { tab: parts[1], toast }) : null; break;
       default: viewNotFound();
     }
     const t = view === "lesson" && byId[parts[1]] ? byId[parts[1]].title
@@ -1444,6 +1448,8 @@
       : titles[view] || "Pnode";
     document.title = t === "Pnode" ? "Pnode" : `${t} · Pnode`;
     renderHud();
+    $main.classList.remove("enter"); void $main.offsetWidth; $main.classList.add("enter");
+    clearTimeout(route._t); route._t = setTimeout(() => $main.classList.remove("enter"), 700);
   }
 
   window.addEventListener("hashchange", () => { route(); window.scrollTo(0, 0); if (!document.getElementById("feed")) $main.focus({ preventScroll: true }); });

@@ -970,7 +970,44 @@ pre { background: color-mix(in srgb, var(--bg) 80%, black); border-color: var(--
 .toast { border-radius: 10px; box-shadow: 0 10px 40px -10px var(--lit-glow); }
 
 /* page enter */
-main > * { animation: rise .45s cubic-bezier(.2, .8, .2, 1) both; }
-main > *:nth-child(2) { animation-delay: .04s; } main > *:nth-child(3) { animation-delay: .08s; } main > *:nth-child(4) { animation-delay: .12s; }
+main.enter > * { animation: rise .45s cubic-bezier(.2, .8, .2, 1) both; }
+main.enter > *:nth-child(2) { animation-delay: .04s; } main.enter > *:nth-child(3) { animation-delay: .08s; } main.enter > *:nth-child(4) { animation-delay: .12s; }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { main > * { animation: none; } .hero-kicker::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { main.enter > * { animation: none; } .hero-kicker::after { animation: none; } }
+
+/* ---------- Mirror (js/mirror.js) ---------- */
+.mm-today { border-color: color-mix(in srgb, var(--lit) 35%, var(--line)); }
+.mm-daynav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 16px; font-family: var(--f-code); }
+.mm-daynav .btn { font-size: 1.3rem; min-width: 44px; }
+.mm-grid { display: grid; gap: 16px; }
+@media (min-width: 820px) { .mm-grid { grid-template-columns: 1fr 1fr; } }
+.mm-grid .panel + .panel { margin-top: 0; }
+.mm-grid h3, .mm-review h3 { font-size: 1.05rem; margin-bottom: 12px; }
+.mm-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 8px 0; border-top: 1px solid var(--line); }
+.mm-row:first-of-type { border-top: 0; }
+.mm-row > span { font-weight: 550; font-size: .95rem; display: grid; }
+.mm-row small { font-weight: 400; font-size: .78rem; }
+.mm-col { flex-direction: column; align-items: stretch; }
+.mm-row input[type="number"] { width: 96px; }
+.mm-row input, .mm-add input, .mm-add select, .mm-row select { font: inherit; font-size: .95rem; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--bg-sunk); color: var(--ink); min-height: 40px; box-sizing: border-box; }
+.mm-scale { display: flex; gap: 6px; flex-wrap: wrap; }
+.mm-scale button { font: 600 .9rem var(--f-code); min-width: 40px; min-height: 38px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line-strong); background: transparent; color: var(--ink-2); cursor: pointer; transition: background .15s, color .15s, box-shadow .2s, transform .1s; }
+.mm-scale button:active { transform: scale(.95); }
+.mm-scale button[aria-pressed="true"] { background: linear-gradient(135deg, var(--lit), var(--lit-2)); color: #fff; border-color: transparent; box-shadow: 0 6px 18px -8px var(--lit-glow); }
+.mm-line { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.mm-add { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.mm-add input[type="text"] { flex: 1 1 160px; min-width: 0; }
+.mm-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 820px) { .mm-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.mm-tile { display: grid; gap: 2px; align-content: start; padding: 14px; border-radius: var(--r-md); border: 1px solid var(--line); background: var(--bg-raised); box-shadow: var(--shadow); min-width: 0; }
+.mm-tile b { font: 600 1.6rem/1.1 var(--f-code); letter-spacing: -.02em; overflow-wrap: anywhere; }
+.mm-bars { display: grid; grid-template-columns: repeat(7, 1fr); align-items: end; gap: 3px; height: 34px; margin-top: 8px; }
+.mm-bars i { display: block; border-radius: 3px 3px 1px 1px; background: linear-gradient(180deg, var(--lit), var(--lit-2)); opacity: .85; }
+.mm-bars i.warm { background: linear-gradient(180deg, var(--ember), var(--danger)); }
+.mm-bars i.cool { background: linear-gradient(180deg, var(--sky), var(--mint)); }
+.mm-insights { margin: 0; }
+.mm-insights li { margin: 6px 0; }
+.mm-review-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.mm-toggle { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.mm-review-text { line-height: 1.65; }
+.mm-review-text h1, .mm-review-text h2, .mm-review-text h3 { background: none; color: var(--ink); -webkit-text-fill-color: currentColor; font-size: 1.05rem; margin: 16px 0 6px; }
